@@ -1,0 +1,75 @@
+:root {
+  color-scheme: light;
+  --paper: #f6f6f0; --tile: #fff; --ink: #272e2a; --muted: #626a62;
+  --edge: #d9ddd4; --accent: #31684e; --selected: #e8f1e4;
+}
+html.dark {
+  color-scheme: dark;
+  --paper: #151817; --tile: #1c201e; --ink: #ecede8; --muted: #afb8ad;
+  --edge: #3b433d; --accent: #b2d3aa; --selected: #293a2d;
+}
+* { box-sizing: border-box; }
+body { margin: 0; background: var(--paper); color: var(--ink); font: 15px/1.4 system-ui, sans-serif; }
+h1, h2, p { margin: 0; }
+h1 { font-size: 32px; line-height: 1.18; letter-spacing: -.05em; }
+h2 { font-size: 21px; letter-spacing: -.04em; }
+p, small { color: var(--muted); }
+header p, .detail-head p { margin-top: 4px; }
+iframe { border: 0; display: block; width: 340px; height: 250px; flex: none; }
+.pair { display: grid; grid-template-columns: 340px 296px; align-items: center; justify-content: center; }
+.zoom { height: 296px; display: grid; place-items: center; }
+table { border-collapse: collapse; }
+.sheet { width: max-content; padding: 24px; }
+.sheet header { height: 82px; }
+.sheet table { background: var(--tile); border: 1px solid var(--edge); }
+.sheet th, .sheet td, .strips th, .strips td { padding: 0; border: 1px solid var(--edge); }
+.sheet thead th { height: 42px; padding: 0 16px; text-align: left; background: var(--paper); font-size: 16px; }
+.sheet thead th.theme { font-size: 13px; color: var(--muted); }
+.sheet tbody th { min-width: 135px; text-align: left; padding: 15px; }
+.sheet th strong, .sheet th small { display: block; }
+.sheet th strong { font-size: 20px; letter-spacing: -.04em; }
+.sheet small { font-size: 13px; font-weight: 450; }
+.number { display: block; margin-bottom: 5px; color: var(--accent); font: 600 15px ui-monospace, monospace; }
+.strips { width: max-content; }
+.strips article { padding: 20px; width: max-content; }
+.strips header { margin-bottom: 16px; }
+.strips h1 { font-size: 23px; }
+.strips table { background: var(--tile); }
+.strips td { width: 154px; height: 154px; text-align: center; }
+.strips td svg { margin: auto; }
+.strips th { text-align: left; padding: 0 12px; }
+.chooser { max-width: 860px; padding: clamp(12px,4vw,32px); margin: 0 auto; }
+.chooser header, .detail-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 14px; }
+fieldset { border: 0; padding: 0; margin: 0; min-width: 0; }
+legend { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
+fieldset input { position: absolute; width: 1px; height: 1px; margin: 0; opacity: 0; }
+fieldset label { position: relative; cursor: pointer; }
+fieldset label > span { display: block; }
+fieldset input:focus-visible + span { outline: 2px solid var(--accent); outline-offset: 2px; }
+.segments { display: flex; border: 1px solid var(--edge); border-radius: 8px; padding: 3px; background: var(--tile); }
+.segments label > span { padding: 5px 9px; font-size: 13px; border-radius: 5px; }
+.segments :checked + span { background: var(--selected); color: var(--accent); font-weight: 600; }
+.pets { display: grid; grid-template-columns: repeat(6,1fr); gap: 6px; margin: 24px 0; }
+.pets label > span {
+  border: 1px solid var(--edge); border-radius: 10px; padding: 8px 2px;
+  text-align: center; background: var(--tile);
+}
+.pets :checked + span { border-color: var(--accent); background: var(--selected); }
+.thumbnail { display: grid; place-items: center; height: 78px; }
+.pets b { display: block; font-size: 12px; }
+.detail { border: 1px solid var(--edge); background: var(--tile); border-radius: 12px; overflow: hidden; }
+.detail-head { padding: 16px; border-bottom: 1px solid var(--edge); }
+.detail-head p { font-size: 13px; }
+.scale { display: grid; grid-template-columns: 340px 296px; justify-content: center; text-align: center;
+  color: var(--muted); font-size: 12px; padding-top: 14px; }
+@media (max-width: 710px) {
+  .pets { grid-template-columns: repeat(3,1fr); }
+  .chooser .pair { grid-template-columns: 1fr; justify-items: center; }
+  .chooser .pair::after { content: 'Sprite · 4×'; color: var(--muted); font-size: 12px; margin-bottom: 12px; }
+  .scale { display: block; } .scale span + span { display: none; }
+}
+@media (max-width: 380px) {
+  .chooser { padding-inline: 0; } .chooser header, .pets { padding-inline: 8px; }
+  .chooser .detail { border-inline: 0; }
+  .chooser iframe { width: min(340px,100vw); }
+}

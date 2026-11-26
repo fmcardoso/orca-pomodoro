@@ -1,0 +1,28 @@
+:root { --sleep-ink: #626e86; --star-ink: #bd7c24; }
+.dark { --sleep-ink: #bbc5de; --star-ink: #f8cb77; }
+.pixel-pet {
+  display: block; flex: none; overflow: hidden;
+  shape-rendering: crispEdges; image-rendering: pixelated;
+}
+.reel { transform-box: view-box; animation: pet-cycle 1.6s step-end infinite; }
+.reel.running { animation: pet-blink 3.8s step-end infinite; }
+.reel.paused { animation-duration: 2.8s; }
+@keyframes pet-cycle {
+  0% { transform: none; }
+  25% { transform: translateX(-100%); }
+  50% { transform: translateX(-200%); }
+  75% { transform: translateX(-300%); }
+}
+@keyframes pet-blink {
+  0% { transform: none; }
+  45% { transform: translateX(-100%); }
+  63% { transform: translateX(-200%); }
+  95% { transform: translateX(-300%); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .pixel-pet .reel { animation: none; }
+}
+/* Swap only the art inside the original Dueto portrait. The v2 controller still
+   owns its DOM, clock, ring, layout, controls and accessibility announcements. */
+.portrait .tomato { display: none; }
+.portrait .pixel-pet { position: absolute; }
