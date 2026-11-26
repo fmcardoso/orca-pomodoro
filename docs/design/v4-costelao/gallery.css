@@ -1,0 +1,22 @@
+.chooser { max-width: 860px; }
+.pets { grid-template-columns: repeat(4, 1fr); }
+.pets small { display: block; font-size: 11px; }
+.pets b { font-size: 15px; }
+nav { display: flex; flex-wrap: wrap; gap: 1.25rem; margin-top: 1rem; }
+nav a { color: var(--accent); font-size: 13px; text-underline-offset: .2em; }
+.sheet { background: var(--paper); }
+.sheet header { display: flex; justify-content: space-between; align-items: center; padding-bottom: 12px; }
+.theme-label { text-align: right; color: var(--muted); font-size: 14px; }
+.sheet tbody th { min-width: 138px; }
+.sheet tbody tr:first-child th { color: var(--muted); }
+.sheet tbody tr:first-child .number { color: inherit; }
+.sheet .pair { grid-template-columns: 340px 264px; }
+.sheet .zoom { height: 256px; }
+.sheet .number { font-size: 13px; }
+.strips article { background: var(--paper); }
+.strips header p { margin-top: 4px; }
+.strips thead th { padding: 8px 12px; background: var(--paper); }
+.strips thead th:not(:first-child) { text-align: center; }
+@media (max-width: 480px) {
+  .pets { grid-template-columns: repeat(2,1fr); }
+}
