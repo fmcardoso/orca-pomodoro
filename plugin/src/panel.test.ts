@@ -25,6 +25,16 @@ test('idle: sleeping face, full ring, Iniciar, minutes editable', () => {
   assert.equal(v.canEditMinutes, true)
   assert.equal(v.canReset, false)
   assert.equal(v.todayLabel, 'Hoje: 0 🍅')
+  assert.deepEqual([v.statusLabel, v.hours], ['Pronto', false])
+})
+
+test('status labels match the Dueto card; long pomodoros show hours', () => {
+  const running = snapshot(start(emptyStore(), T0, 90), T0)
+  const v = panelView(running, T0)
+  assert.deepEqual([v.statusLabel, v.clock, v.hours], ['Em foco', '1:30:00', true])
+  assert.equal(panelView(snapshot(pause(start(emptyStore(), T0), T0), T0), T0).statusLabel, 'Pausado')
+  const done = reconcile(start(emptyStore(), T0), T0 + 25 * MINUTE).store
+  assert.equal(panelView(snapshot(done, T0 + 25 * MINUTE), T0 + 25 * MINUTE).statusLabel, 'Concluído')
 })
 
 test('running: focused face, ring and clock follow the panel clock between posts', () => {
@@ -126,7 +136,7 @@ test('panel.html has every element panel-main.ts looks up', () => {
   const ids = [...script.matchAll(/\$(?:<[^>]+>)?\('([\w-]+)'\)/g)].map((m) => m[1])
   assert.ok(ids.length >= 9)
   for (const id of ids) assert.ok(html.includes(`id="${id}"`), `missing #${id}`)
-  for (const cls of ['ring-progress', 'face-focused', 'face-sleeping', 'face-happy', 'chip']) {
+  for (const cls of ['dial', 'arc', 'pixel-pet', 'data-preset="25"', 'data-preset="50"', 'icon-play', 'icon-pause']) {
     assert.ok(html.includes(cls), `missing .${cls}`)
   }
   assert.ok(html.includes('src="./panel-main.ts"'))
