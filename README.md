@@ -22,6 +22,8 @@ barra lateral direita.
 > parecidas com as do Orca e um `orca` simulado). Capturas feitas dentro do Orca entram em
 > `docs/screenshots/` quando o plugin for aprovado e carregado.
 
+[Comparar três propostas compactas para o painel](docs/design/v2/README.md).
+
 ## Instalar e ativar
 
 O plugin fica em `plugin/` (a raiz do repositório só tem docs e o TypeScript para checar

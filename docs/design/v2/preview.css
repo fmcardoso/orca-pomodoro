@@ -1,0 +1,207 @@
+/* Each fallback supplies the standalone preview palette. Orca supplies the variables in-panel. */
+:root {
+  color-scheme: light;
+  --paper: var(--orca-background, #fff);
+  --ink: var(--orca-foreground, #202322);
+  --soft: var(--orca-muted-foreground, #666b68);
+  --card: var(--orca-card, #fafafa);
+  --muted: var(--orca-muted, #f0f0f2);
+  --edge: var(--orca-border, #e1e2e1);
+  --button: var(--orca-primary, #252b28);
+  --button-text: var(--orca-primary-foreground, #fff);
+  --ring: var(--orca-ring, #758c80);
+  --coral: #d65b48;
+  --leaf: #37745b;
+  --font: var(--orca-font-sans, system-ui, sans-serif);
+}
+.dark {
+  color-scheme: dark;
+  --paper: var(--orca-background, #121214);
+  --ink: var(--orca-foreground, #ececf0);
+  --soft: var(--orca-muted-foreground, #acaeb5);
+  --card: var(--orca-card, #1a1a1e);
+  --muted: var(--orca-muted, #26262b);
+  --edge: var(--orca-border, #36363b);
+  --button: var(--orca-primary, #e6e8e7);
+  --button-text: var(--orca-primary-foreground, #18191b);
+  --ring: var(--orca-ring, #a2bcac);
+  --coral: #ee8875;
+  --leaf: #88bfa1;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font: 13px/1.35 var(--font);
+  -webkit-font-smoothing: antialiased;
+  font-variant-numeric: tabular-nums;
+}
+main {
+  --signal: var(--coral);
+  max-width: 360px;
+  padding: 14px;
+  margin-inline: auto;
+}
+main:is([data-state="paused"], [data-state="idle"]) { --signal: var(--soft); }
+main[data-state="finished"] { --signal: var(--leaf); }
+button, input {
+  font: inherit;
+  color: inherit;
+}
+button {
+  cursor: pointer;
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+button:disabled, input:disabled { cursor: default; }
+button:enabled:hover { filter: brightness(.9); }
+button:enabled:active { transform: translateY(1px); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--ring); outline-offset: 2px; }
+.widget {
+  border: 1px solid var(--edge);
+  border-radius: calc(var(--orca-radius, 8px) + 6px);
+  background: var(--paper);
+}
+.hero { position: relative; }
+.status {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+  font-weight: 550;
+  color: var(--soft);
+}
+.status::before { content: ''; width: 6px; height: 6px; background: var(--signal); border-radius: 50%; }
+.clock {
+  font-size: 35px;
+  line-height: 1.12;
+  font-weight: 620;
+  letter-spacing: -.055em;
+}
+.hours .clock { font-size: 28px; }
+.portrait { position: relative; display: grid; place-items: center; }
+.tomato { width: 100%; display: block; overflow: visible; }
+.ground { fill: var(--ink); opacity: .09; }
+.dark .ground { fill: black; opacity: .3; }
+.expression { fill: #432923; }
+.line, .sleep-mark {
+  fill: none;
+  stroke: #432923;
+  stroke-width: 2.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.sleep-mark { stroke: var(--soft); stroke-width: 2.1; }
+.sparkle, .sleep-mark { display: none; }
+[data-state="finished"] .sparkle, :is([data-state="idle"], [data-state="paused"]) .sleep-mark { display: block; }
+@media (prefers-reduced-motion: no-preference) {
+  .tomato { transform-origin: 50% 85%; }
+  :is([data-state="idle"], [data-state="paused"]) .tomato { animation: breathe 4s ease-in-out infinite; }
+  [data-state="finished"] .tomato { animation: cheer .7s ease-in-out 2; }
+  @keyframes breathe { 50% { transform: scale(1.02, .97); } }
+  @keyframes cheer { 48% { transform: translateY(-3px) rotate(-3deg); } }
+}
+.actions, .primary, .reset { display: flex; align-items: center; }
+.actions { gap: 6px; }
+.primary, .reset {
+  justify-content: center;
+  height: 30px;
+  min-width: 30px;
+  border-radius: 8px;
+}
+.primary { background: var(--button); color: var(--button-text); gap: 5px; font-size: 12px; font-weight: 600; }
+.reset { border: 1px solid var(--edge); color: var(--soft); background: var(--paper); }
+.reset:disabled { opacity: .45; }
+.icon { width: 15px; height: 15px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; }
+.settings, footer { display: flex; align-items: center; gap: 9px; padding: 9px 14px; }
+.settings { border-top: 1px solid var(--edge); }
+.row-label { font-size: 12px; color: var(--soft); margin-right: auto; }
+.choices {
+  display: inline-flex; padding: 2px; border-radius: 7px;
+  background: var(--muted);
+}
+.choices button { min-width: 32px; height: 23px; border-radius: 5px; font-size: 12px; color: var(--soft); }
+.choices [aria-pressed="true"] {
+  background: var(--paper); color: var(--ink); font-weight: 650;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--ink) 10%, transparent);
+}
+.custom {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 0 7px; height: 27px; border: 1px solid var(--edge);
+  border-radius: 7px; color: var(--soft); font-size: 11px;
+}
+.custom input {
+  width: 3ch; border: 0; background: transparent; text-align: center;
+  padding: 2px 0; appearance: textfield; color: var(--ink); font-size: 12px;
+}
+input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { appearance: none; }
+.settings:has(input:disabled) :is(.choices,.custom) { opacity: .75; }
+footer { justify-content: space-between; border-top: 1px solid var(--edge); padding-block: 5px; }
+.today { font-size: 12px; font-weight: 560; }
+.clear { min-height: 25px; color: var(--soft); font-size: 11.5px; }
+.clear:hover { text-decoration: underline; }
+.meter { height: 3px; overflow: hidden; border-radius: 999px; background: var(--muted); }
+.fill { width: var(--progress); height: 100%; background: var(--signal); border-radius: inherit; }
+
+/* Dueto: the dial holds the portrait, with the timer and transport alongside it. */
+.dueto .hero {
+  display: flex; align-items: center; justify-content: center; gap: clamp(13px, 6vw, 24px);
+  padding: 18px 14px;
+  background: color-mix(in srgb, var(--signal) 5%, var(--paper));
+}
+.dueto .widget { border-radius: 14px; }
+.dueto .hero { border-radius: 13px 13px 0 0; }
+.dueto .portrait { width: clamp(76px, 30vw, 106px); aspect-ratio: 1; flex-shrink: 0; }
+.dueto .tomato { width: 76%; }
+.dueto .readout { flex: 0 1 133px; }
+.dial { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke-width: 3.25; }
+.track { stroke: color-mix(in srgb, var(--signal) 13%, var(--paper)); }
+.arc { stroke: var(--signal); stroke-linecap: round; }
+.dueto .clock { margin: 1px 0 8px; }
+.dueto .primary { padding-inline: 10px; }
+
+/* Ninho: two thumb-sized controls frame the pet above the centered countdown. */
+.ninho .hero { display: flex; flex-direction: column; align-items: center; padding: 12px; }
+.ninho .perch { display: flex; gap: 18px; align-items: center; }
+.ninho .portrait {
+  width: 70px; aspect-ratio: 1;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--signal) 8%, var(--paper));
+}
+.ninho .tomato { width: 88%; }
+.ninho .primary, .ninho .reset { width: 30px; border-radius: 50%; }
+.ninho .clock { font-size: 31px; margin-top: 4px; }
+.ninho .status { font-size: 11.5px; margin-top: 1px; }
+.ninho .status::before { display: none; }
+.ninho .meter { width: 64px; margin-top: 7px; }
+.ninho .settings { background: var(--card); }
+
+/* Régua: a continuous instrument strip with a graduated, time-left scale. */
+.regua { padding: 16px; }
+.regua .widget { border: 0; border-radius: 0; }
+.regua .hero { padding: 3px 0 12px; }
+.strip { display: flex; align-items: center; gap: 9px; }
+.regua .portrait { width: 49px; flex: 0 0 auto; }
+.regua .readout { flex: 1; }
+.regua .clock { font-size: 29px; }
+.regua.hours .clock { font-size: 23px; }
+.regua .status { font-size: 11.5px; }
+.regua .status::before { display: none; }
+.regua .primary, .regua .reset { border-radius: 50%; }
+.ruler { position: relative; margin-top: 13px; }
+.regua .meter { height: 4px; }
+.ticks {
+  height: 4px; margin-top: 3px;
+  background: repeating-linear-gradient(90deg, var(--edge) 0 1px, transparent 1px 5%);
+  border-right: 1px solid var(--edge);
+}
+.regua .settings, .regua footer { padding-inline: 0; }
+.regua .settings { border-top: 0; padding-top: 3px; }
+@media (max-width: 260px) {
+  main { padding-inline: 8px; }
+  .dueto .hero { gap: 8px; padding-inline: 6px; }
+  .settings, footer { padding-inline: 8px; gap: 4px; }
+  .regua .strip { flex-wrap: wrap; }
+}
