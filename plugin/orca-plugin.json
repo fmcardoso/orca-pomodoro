@@ -1,0 +1,62 @@
+{
+  "manifestVersion": 2,
+  "id": "pomodoro",
+  "name": "Pomodoro",
+  "version": "0.1.0",
+  "description": "Um tomate de estimação que conta seus pomodoros: timer na barra de status, painel animado e aviso no fim de cada foco.",
+  "license": "MIT",
+  "engines": {
+    "orca": ">=1.4.274"
+  },
+  "execution": "trusted-worker",
+  "pluginApi": 1,
+  "main": "src/worker.ts",
+  "contributes": {
+    "panels": [
+      {
+        "id": "pomodoro",
+        "title": "Pomodoro",
+        "icon": {
+          "path": "M12 8C7.6 8 4 10.7 4 14.5S7.6 21 12 21s8-2.7 8-6.5S16.4 8 12 8Z M12 8V4.5 M8.5 6.5 12 8l3.5-1.5 M9.5 9.5 12 8l2.5 1.5",
+          "mode": "stroke"
+        },
+        "entry": "src/panel.html",
+        "ui": "html"
+      }
+    ],
+    "commands": [
+      { "id": "pomodoro.toggle", "title": "Pomodoro: Iniciar/Pausar" },
+      { "id": "pomodoro.reset", "title": "Pomodoro: Resetar timer" },
+      { "id": "pomodoro.resetDay", "title": "Pomodoro: Zerar contagem do dia" },
+      { "id": "pomodoro.open", "title": "Pomodoro: Abrir Pomodoro" },
+      { "id": "pomodoro.focus25", "title": "Pomodoro: Foco 25 min" },
+      { "id": "pomodoro.focus50", "title": "Pomodoro: Foco 50 min" }
+    ],
+    "keybindings": [{ "command": "pomodoro.open", "key": "Mod+Shift+P" }],
+    "statusBarItems": [
+      {
+        "id": "pomodoro",
+        "text": "🍅 25:00 · 0",
+        "tone": "neutral",
+        "tooltip": "Pomodoro: clique para abrir o painel",
+        "command": "pomodoro.open"
+      }
+    ],
+    "settings": [
+      {
+        "key": "focusMinutes",
+        "title": "Minutos de foco",
+        "description": "Duração padrão de um pomodoro, em minutos (1 a 180).",
+        "type": "integer",
+        "default": 25,
+        "minimum": 1,
+        "maximum": 180
+      }
+    ]
+  },
+  "capabilities": [
+    { "kind": "notifications:show" },
+    { "kind": "storage:own" },
+    { "kind": "settings:own" }
+  ]
+}
