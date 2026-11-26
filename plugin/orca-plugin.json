@@ -2,7 +2,7 @@
   "manifestVersion": 2,
   "id": "pomodoro",
   "name": "Pomodoro",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Um tomate de estimação que conta seus pomodoros: timer na barra de status, painel animado e aviso no fim de cada foco.",
   "license": "MIT",
   "engines": {

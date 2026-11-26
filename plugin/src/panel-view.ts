@@ -22,7 +22,10 @@ export type PanelView = {
   ring: number
   primaryLabel: 'Iniciar' | 'Pausar' | 'Continuar'
   primaryAction: 'start' | 'pause' | 'resume'
-  caption: string
+  /** The short status beside the dot: Em foco / Pausado / Concluído / Pronto. */
+  statusLabel: string
+  /** True when the clock shows hours (h:mm:ss), which the card draws smaller. */
+  hours: boolean
   minutes: number
   canEditMinutes: boolean
   canReset: boolean
@@ -38,20 +41,22 @@ export function panelView(snap: Snapshot, now: number): PanelView {
   // The worker's snapshot may predate midnight: a new day starts at zero.
   const todayCount = localDateKey(now) === snap.today ? snap.todayCount : 0
   const face: Face = running ? 'focused' : snap.status === 'finished' ? 'happy' : 'sleeping'
-  const captions: Record<TimerStatus, string> = {
-    running: 'Focando… você consegue!',
-    paused: 'Pausado. Tirando um cochilo…',
-    finished: 'Pomodoro concluído! Hora de uma pausa.',
-    idle: 'Zzz… pronto para focar?'
+  const labels: Record<TimerStatus, string> = {
+    running: 'Em foco',
+    paused: 'Pausado',
+    finished: 'Concluído',
+    idle: 'Pronto'
   }
+  const clock = formatClock(snap.status === 'finished' ? 0 : left)
   return {
     status: snap.status,
     face,
-    clock: formatClock(snap.status === 'finished' ? 0 : left),
+    clock,
+    hours: clock.length > 5,
     ring: snap.status === 'finished' ? 1 : Math.min(1, Math.max(0, left / duration)),
     primaryLabel: running ? 'Pausar' : snap.status === 'paused' ? 'Continuar' : 'Iniciar',
     primaryAction: running ? 'pause' : snap.status === 'paused' ? 'resume' : 'start',
-    caption: captions[snap.status],
+    statusLabel: labels[snap.status],
     minutes: Math.round(snap.durationMs / MINUTE),
     canEditMinutes: snap.status === 'idle' || snap.status === 'finished',
     canReset: snap.status !== 'idle',

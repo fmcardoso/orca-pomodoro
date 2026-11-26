@@ -2,75 +2,93 @@
 // forwards presses. It ticks its own countdown while running so the clock and ring move smoothly
 // between the worker's posts, and stops ticking otherwise.
 import { STATE_EVENT, STORE_KEY } from './protocol.ts'
-import { createPanelController, type PanelView } from './panel-view.ts'
+import { createPanelController, type Face, type PanelView } from './panel-view.ts'
+import { COLORS, FRAMES, frameRuns, GRID, PET_LABEL, REEL_CLASS, THEMED_INKS } from './sprites.ts'
 import type { Snapshot } from './timer.ts'
 
-const $ = <T extends HTMLElement>(id: string) => document.getElementById(id) as T
+const $ = <T extends Element = HTMLElement>(id: string) => document.getElementById(id) as unknown as T
 
 const app = $('app')
+const portrait = $('portrait')
+const pet = $<SVGSVGElement>('pet')
+const arc = $<SVGCircleElement>('arc')
+const statusText = $('status')
 const clock = $('clock')
-const caption = $('caption')
 const primaryBtn = $<HTMLButtonElement>('primary')
+const primaryLabel = $('primary-label')
 const resetBtn = $<HTMLButtonElement>('reset')
 const minutesInput = $<HTMLInputElement>('minutes')
 const todayLabel = $('today')
-const dots = $('dots')
 const resetDayBtn = $<HTMLButtonElement>('reset-day')
 const errorBox = $('error')
-const ring = document.querySelector<SVGCircleElement>('.ring-progress')!
-const chips = Array.from(document.querySelectorAll<HTMLButtonElement>('.chip'))
+const presets = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-preset]'))
 
-const MAX_DOTS = 12
+const SVG_NS = 'http://www.w3.org/2000/svg'
 let ticker: ReturnType<typeof setInterval> | null = null
 let lastStatus = ''
-let lastDots = -1
+let lastFace: Face | null = null
 let askedAtEnd = false
-let ready = false
+
+/** Draws the pet's four frames side by side in one reel; panel.css steps through them. */
+function drawPet(face: Face): void {
+  const reel = document.createElementNS(SVG_NS, 'g')
+  reel.setAttribute('class', `reel ${REEL_CLASS[face]}`)
+  for (let frame = 0; frame < FRAMES; frame++) {
+    const g = document.createElementNS(SVG_NS, 'g')
+    g.setAttribute('transform', `translate(${GRID * frame} 0)`)
+    for (const run of frameRuns(face, frame)) {
+      const rect = document.createElementNS(SVG_NS, 'rect')
+      rect.setAttribute('x', String(run.x))
+      rect.setAttribute('y', String(run.y))
+      rect.setAttribute('width', String(run.w))
+      rect.setAttribute('height', '1')
+      if (THEMED_INKS[run.ink]) rect.setAttribute('class', THEMED_INKS[run.ink])
+      else rect.setAttribute('fill', COLORS[run.ink])
+      g.append(rect)
+    }
+    reel.append(g)
+  }
+  pet.replaceChildren(reel)
+  pet.setAttribute('aria-label', PET_LABEL[face])
+}
+
+/** Keeps the sprite on whole CSS pixels inside the dial, so every art pixel stays crisp. */
+function alignPet(): void {
+  const box = portrait.getBoundingClientRect()
+  const size = pet.width.baseVal.value
+  pet.style.left = `${Math.round(box.x + (box.width - size) / 2) - box.x}px`
+  pet.style.top = `${Math.round(box.y + (box.height - size) / 2) - box.y}px`
+}
+new ResizeObserver(alignPet).observe(app)
+// Asleep until the first snapshot, as the idle timer would be.
+lastFace = 'sleeping'
+drawPet(lastFace)
 
 function render(view: PanelView): void {
-  app.dataset.status = view.status
-  app.className = `pet is-${view.status} face-${view.face}${ready ? ' ready' : ''}`
-  if (!ready) requestAnimationFrame(() => requestAnimationFrame(() => {
-    ready = true
-    app.classList.add('ready')
-  }))
+  app.dataset.state = view.status
+  app.classList.toggle('hours', view.hours)
+  if (view.face !== lastFace) {
+    lastFace = view.face
+    drawPet(view.face)
+    alignPet()
+  }
+  statusText.textContent = view.statusLabel
   clock.textContent = view.clock
-  caption.textContent = view.caption
-  ring.style.strokeDashoffset = String(Math.round((1 - view.ring) * 1000))
+  arc.style.strokeDasharray = `${view.ring * 100} 100`
 
-  primaryBtn.textContent = view.primaryLabel
+  primaryLabel.textContent = view.primaryLabel
+  primaryBtn.setAttribute('aria-label', view.primaryLabel)
+  primaryBtn.title = view.primaryLabel
   resetBtn.disabled = !view.canReset
   minutesInput.disabled = !view.canEditMinutes
   if (document.activeElement !== minutesInput || !view.canEditMinutes) {
     minutesInput.value = String(view.minutes)
   }
-  for (const chip of chips) {
-    chip.disabled = !view.canEditMinutes
-    chip.classList.toggle('active', Number(chip.dataset.minutes) === view.minutes)
+  for (const button of presets) {
+    button.disabled = !view.canEditMinutes
+    button.setAttribute('aria-pressed', String(Number(button.dataset.preset) === view.minutes))
   }
-
   todayLabel.textContent = view.todayLabel
-  if (view.todayCount !== lastDots) {
-    lastDots = view.todayCount
-    dots.replaceChildren()
-    if (view.todayCount === 0) {
-      const empty = document.createElement('span')
-      empty.className = 'empty'
-      empty.textContent = 'Nenhum ainda. Bora?'
-      dots.append(empty)
-    }
-    for (let i = 0; i < Math.min(view.todayCount, MAX_DOTS); i++) {
-      const dot = document.createElement('span')
-      dot.className = 'dot'
-      dots.append(dot)
-    }
-    if (view.todayCount > MAX_DOTS) {
-      const more = document.createElement('span')
-      more.className = 'more'
-      more.textContent = `+${view.todayCount - MAX_DOTS}`
-      dots.append(more)
-    }
-  }
 
   if (view.status !== lastStatus) {
     lastStatus = view.status
@@ -105,7 +123,7 @@ function setTicking(on: boolean): void {
         askedAtEnd = true
         setTimeout(() => void controller.refresh(), 1500)
       }
-    }, 500)
+    }, 250)
   } else if (!on && ticker) {
     clearInterval(ticker)
     ticker = null
@@ -122,9 +140,9 @@ minutesInput.addEventListener('change', () => void controller.setMinutes(inputMi
 minutesInput.addEventListener('keydown', (event) => {
   if (event.key === 'Enter') minutesInput.blur()
 })
-for (const chip of chips) {
-  chip.addEventListener('click', () => {
-    minutesInput.value = chip.dataset.minutes ?? '25'
+for (const button of presets) {
+  button.addEventListener('click', () => {
+    minutesInput.value = button.dataset.preset ?? '25'
     void controller.setMinutes(inputMinutes())
   })
 }
