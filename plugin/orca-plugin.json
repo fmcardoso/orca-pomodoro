@@ -4,7 +4,39 @@
   "name": "Pomodoro",
   "version": "0.3.0",
   "description": "A pet tomato that counts your pomodoros: a status bar timer, an animated panel, a break after each focus, and a notification when each one ends.",
+  "author": {
+    "name": "Felipe Maciel Cardoso",
+    "url": "https://github.com/fmcardoso"
+  },
+  "repository": "https://github.com/fmcardoso/orca-pomodoro",
   "license": "MIT",
+  "icon": "assets/icon.png",
+  "cover": {
+    "path": "assets/cover.png",
+    "alt": "A pixel-art tomato named Pomodoro next to the panel, which shows a finished pomodoro and proposes a 15 minute break."
+  },
+  "screenshots": [
+    {
+      "path": "assets/screenshot-focus.png",
+      "alt": "The Pomodoro panel counting down 18:42 in focus, with the tomato inside a red progress ring and the status bar item showing 18:42 and 3 pomodoros.",
+      "caption": "Focus, with the countdown in the status bar"
+    },
+    {
+      "path": "assets/screenshot-break.png",
+      "alt": "The panel after a pomodoro ends: Done, a Take break button, and a Break row with 5 and 15 minutes, 15 selected on the 4th pomodoro, and Skip.",
+      "caption": "A break is proposed when a pomodoro ends"
+    },
+    {
+      "path": "assets/screenshot-rest.png",
+      "alt": "The panel in a dark theme during a break: a green ring, a sleeping tomato and 11:40 left.",
+      "caption": "Breaks get a green ring and a sleeping tomato"
+    },
+    {
+      "path": "assets/screenshot-day.png",
+      "alt": "The panel in a dark theme, paused with 16:00 left and today at 6 pomodoros, with minus and plus buttons to correct the count.",
+      "caption": "Today’s count, with − and + to fix it"
+    }
+  ],
   "engines": {
     "orca": ">=1.4.274"
   },
@@ -25,15 +57,41 @@
       }
     ],
     "commands": [
-      { "id": "pomodoro.toggle", "title": "Pomodoro: Start/Pause" },
-      { "id": "pomodoro.reset", "title": "Pomodoro: Reset timer" },
-      { "id": "pomodoro.resetDay", "title": "Pomodoro: Reset day count" },
-      { "id": "pomodoro.break", "title": "Pomodoro: Start break" },
-      { "id": "pomodoro.open", "title": "Pomodoro: Open Pomodoro" },
-      { "id": "pomodoro.focus25", "title": "Pomodoro: Focus 25 min" },
-      { "id": "pomodoro.focus50", "title": "Pomodoro: Focus 50 min" }
+      {
+        "id": "pomodoro.toggle",
+        "title": "Pomodoro: Start/Pause"
+      },
+      {
+        "id": "pomodoro.reset",
+        "title": "Pomodoro: Reset timer"
+      },
+      {
+        "id": "pomodoro.resetDay",
+        "title": "Pomodoro: Reset day count"
+      },
+      {
+        "id": "pomodoro.break",
+        "title": "Pomodoro: Start break"
+      },
+      {
+        "id": "pomodoro.open",
+        "title": "Pomodoro: Open Pomodoro"
+      },
+      {
+        "id": "pomodoro.focus25",
+        "title": "Pomodoro: Focus 25 min"
+      },
+      {
+        "id": "pomodoro.focus50",
+        "title": "Pomodoro: Focus 50 min"
+      }
     ],
-    "keybindings": [{ "command": "pomodoro.open", "key": "Mod+Shift+P" }],
+    "keybindings": [
+      {
+        "command": "pomodoro.open",
+        "key": "Mod+Shift+P"
+      }
+    ],
     "statusBarItems": [
       {
         "id": "pomodoro",
@@ -56,8 +114,14 @@
     ]
   },
   "capabilities": [
-    { "kind": "notifications:show" },
-    { "kind": "storage:own" },
-    { "kind": "settings:own" }
+    {
+      "kind": "notifications:show"
+    },
+    {
+      "kind": "storage:own"
+    },
+    {
+      "kind": "settings:own"
+    }
   ]
 }

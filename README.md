@@ -1,5 +1,7 @@
 # Pomodoro 🍅 — a pet tomato for Orca
 
+![A pixel-art tomato next to the Pomodoro panel proposing a break](plugin/assets/cover.png)
+
 An Orca plugin with a Pomodoro timer that lives in the status bar and in an animated panel in the
 right sidebar.
 
@@ -50,11 +52,21 @@ Status bar: ![stopped](docs/screenshots/v0.2/orca/status-bar-idle.png) ·
 ![done](docs/screenshots/v0.2/orca/status-bar-finished.png) ·
 ![break](docs/screenshots/v0.2/orca/status-bar-break.png)
 
+Images for Orca's plugin directory: [`docs/store`](docs/store/README.md).
+
 Design rounds: [compact layouts](docs/design/v2/README.md) ·
 [six pixel tomatoes](docs/design/v3-tomato/README.md) ·
 [Costelão's faces](docs/design/v4-costelao/README.md).
 
-## Install and enable
+## Install
+
+In Orca, open the plugin page, search for **Pomodoro** (`fmcardoso.pomodoro`) and install it, or:
+
+```sh
+orca plugin install fmcardoso.pomodoro
+```
+
+## Develop locally
 
 The plugin lives in `plugin/` (the repository root only has docs and the TypeScript compiler for
 type checking). Load it as a development folder (key `local.pomodoro`):
@@ -117,3 +129,7 @@ Files (in `plugin/`): `src/timer.ts` (pure logic), `src/worker.ts`, `src/open-pa
 `src/panel.html` + `panel.css` + `panel-main.ts` (DOM) + `panel-view.ts` (the panel's testable
 logic), `src/sprites.ts` (Costelão, frame by frame, the same as in the design rounds), tests in
 `src/*.test.ts`.
+
+## License
+
+[MIT](LICENSE).
