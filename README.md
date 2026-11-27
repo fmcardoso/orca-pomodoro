@@ -32,6 +32,15 @@ barra lateral direita.
 > node docs/screenshots/v0.2/capture.cjs
 > ```
 
+**Dentro do Orca** (`orca plugin shot`, tema escuro do Orca, 27/11/2026):
+
+| Pronto | Em foco | Pausado | Concluído |
+| --- | --- | --- | --- |
+| ![](docs/screenshots/v0.2/orca/panel-idle.png) | ![](docs/screenshots/v0.2/orca/panel-running.png) | ![](docs/screenshots/v0.2/orca/panel-paused.png) | ![](docs/screenshots/v0.2/orca/panel-finished.png) |
+
+Barra de status: ![parado](docs/screenshots/v0.2/orca/status-bar-idle.png) ·
+![rodando](docs/screenshots/v0.2/orca/status-bar-running.png)
+
 Rodadas de desenho: [layouts compactos](docs/design/v2/README.md) ·
 [seis tomates de pixel](docs/design/v3-tomato/README.md) ·
 [rostos do Costelão](docs/design/v4-costelao/README.md). As capturas do v0.1 continuam em
