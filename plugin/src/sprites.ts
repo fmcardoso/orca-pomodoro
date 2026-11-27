@@ -102,7 +102,7 @@ export function frameRuns(face: Face, frame: number): Run[] {
 export const REEL_CLASS: Record<Face, string> = { focused: 'running', sleeping: 'paused', happy: 'finished' }
 
 export const PET_LABEL: Record<Face, string> = {
-  focused: 'Tomate concentrado',
-  sleeping: 'Tomate dormindo',
-  happy: 'Tomate festejando'
+  focused: 'Focused tomato',
+  sleeping: 'Sleeping tomato',
+  happy: 'Celebrating tomato'
 }

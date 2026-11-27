@@ -12,7 +12,7 @@ async function capture(browser) {
   for (const theme of ['light', 'dark']) {
     await page.goto(url + '?sheet=1&theme=' + theme)
     const cards = page.locator('iframe')
-    if (await cards.count() !== 18) throw new Error('Faltam cartões na comparação')
+    if (await cards.count() !== 18) throw new Error('Cards are missing from the comparison')
     for (const card of await cards.all()) await card.contentFrame().locator('.pixel-pet').waitFor()
     await page.locator('.sheet').screenshot({ path: join(__dirname, theme === 'light' ? 'sheet.png' : 'sheet-dark.png') })
   }

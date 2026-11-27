@@ -10,16 +10,22 @@ const ts = require(resolve(__dirname, '../../../node_modules/typescript'))
 const src = resolve(__dirname, '../../../plugin/src')
 const now = new Date(2026, 10, 26, 10, 0).getTime()
 const MIN = 60_000
-const base = { durationMs: 25 * MIN, finishedAt: null, today: '2026-11-26', at: now }
+const base = {
+  kind: 'focus', durationMs: 25 * MIN, focusMs: 25 * MIN, suggestedBreakMinutes: 5,
+  finishedAt: null, today: '2026-11-26', at: now
+}
 const states = {
   running: { ...base, status: 'running', remainingMs: 1122_000, endsAt: now + 1122_000, todayCount: 3 },
   paused: { ...base, status: 'paused', remainingMs: 16 * MIN, endsAt: null, todayCount: 3 },
-  finished: { ...base, status: 'finished', remainingMs: 0, endsAt: null, finishedAt: now, todayCount: 4 },
+  finished: { ...base, suggestedBreakMinutes: 15, status: 'finished', remainingMs: 0, endsAt: null, finishedAt: now, todayCount: 4 },
+  'break-running': { ...base, status: 'running', kind: 'break', durationMs: 5 * MIN, remainingMs: 3 * MIN + 20_000, endsAt: now + 200_000, todayCount: 4 },
+  'break-finished': { ...base, status: 'finished', kind: 'break', durationMs: 5 * MIN, remainingMs: 0, endsAt: null, finishedAt: now, todayCount: 4 },
   idle: { ...base, status: 'idle', remainingMs: 25 * MIN, endsAt: null, todayCount: 4 }
 }
 const shots = [
   ['running', 'light'], ['paused', 'light'], ['finished', 'light'], ['idle', 'light'],
-  ['running', 'dark'], ['paused', 'dark'], ['finished', 'dark']
+  ['running', 'dark'], ['paused', 'dark'], ['finished', 'dark'],
+  ['break-running', 'light'], ['break-running', 'dark'], ['break-finished', 'light']
 ]
 
 const types = { html: 'text/html', css: 'text/css', ts: 'application/javascript' }
@@ -55,7 +61,7 @@ async function capture(browser) {
       document.addEventListener('DOMContentLoaded', () => document.documentElement.classList.add(theme))
     }, { snap: states[state], theme })
     await page.goto('http://pomodoro.panel/panel.html')
-    await page.locator(`main[data-state="${state}"]`).waitFor()
+    await page.locator(`main[data-state="${state.replace(/^break-/, '')}"]`).waitFor()
     await page.locator('main').screenshot({ path: join(__dirname, `${state}-${theme}.png`) })
     await page.close()
   }

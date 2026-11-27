@@ -1,27 +1,27 @@
-# Tomates de pixel para o Dueto
+# Pixel tomatoes for Dueto
 
-[Abrir o seletor interativo](index.html) · [Comparar no tema claro](sheet.png) · [Comparar no tema escuro](sheet-dark.png)
+[Open the interactive picker](index.html) · [Compare in the light theme](sheet.png) · [Compare in the dark theme](sheet-dark.png)
 
-Abra o HTML diretamente no navegador. Selecione um tomate e alterne entre concentrado, dormindo e feliz. Os botões do Dueto também mudam a expressão do tomate. Com a preferência de movimento reduzido do sistema, cada estado usa uma pose fixa.
+Open the HTML directly in the browser. Select a tomato and switch between focused, sleeping and happy. The Dueto (duet) buttons also change the tomato's expression. With the system's reduced-motion preference, each state uses a fixed pose.
 
-Nas pranchas, cada linha é um personagem. As três colunas mostram o cartão em uma barra lateral de 340 px e, ao lado, o mesmo sprite ampliado 4×. A escala do relógio, dos controles e do anel é a mesma da proposta A.
+On the sheets, each row is a character. The three columns show the card in a 340 px sidebar and, next to it, the same sprite enlarged 4×. The scale of the clock, the controls and the ring is the same as in proposal A.
 
-| Tomate | Desenho | Grade e escala no cartão | Quadros |
+| Tomato | Design | Grid and scale on the card | Frames |
 | --- | --- | --- | --- |
-| 01 · Pingo | Cerejinha coral sem contorno, com olhos de dois pixels de altura e bochechas rosadas. | 16 × 16 a 4× | [Ver sequência](1-frames.png) |
-| 02 · Roma | Tomate italiano inclinado, com brilho diagonal e um par de botinhas. | 24 × 24 a 3× | [Ver sequência](2-frames.png) |
-| 03 · Costelão | Tomate caqui achatado, com gomos sombreados e sobrancelhas concentradas. | 32 × 32 a 2× | [Ver sequência](3-frames.png) |
-| 04 · Cartucho | Quatro cores de arcade, contorno ameixa, visor creme e olhos quadrados. | 16 × 16 a 4× | [Ver sequência](4-frames.png) |
-| 05 · Duplinha | Dois tomates-cereja, um vermelho e um dourado, que piscam juntos no mesmo ramo. | 24 × 24 a 3× | [Ver sequência](5-frames.png) |
-| 06 · Broto | Tomate amarelo com duas folhas grandes, olhos brilhantes e bochechas cor de pêssego. | 24 × 24 a 3× | [Ver sequência](6-frames.png) |
+| 01 · Pingo | Outline-free coral cherry tomato with two-pixel-tall eyes and pink cheeks. | 16 × 16 at 4× | [View sequence](1-frames.png) |
+| 02 · Roma | Tilted Roma tomato with a diagonal highlight and a pair of little boots. | 24 × 24 at 3× | [View sequence](2-frames.png) |
+| 03 · Costelão (big rib) | Flattened persimmon tomato with shaded ribs and focused eyebrows. | 32 × 32 at 2× | [View sequence](3-frames.png) |
+| 04 · Cartucho | Four arcade colors, a plum outline, a cream visor and square eyes. | 16 × 16 at 4× | [View sequence](4-frames.png) |
+| 05 · Duplinha | Two cherry tomatoes, one red and one golden, blinking together on the same vine. | 24 × 24 at 3× | [View sequence](5-frames.png) |
+| 06 · Broto | Yellow tomato with two big leaves, bright eyes and peach-colored cheeks. | 24 × 24 at 3× | [View sequence](6-frames.png) |
 
-**Minha escolha é o Pingo.** A copa verde e o corpo coral formam uma silhueta fácil de reconhecer. Os olhos retos, fechados e sorridentes também se distinguem no tamanho real da barra lateral.
+**My pick is Pingo.** The green cap and coral body make a silhouette that is easy to recognize. The straight, closed, smiling eyes also stand out at the sidebar's real size.
 
-## Reproduzir as pranchas
+## Reproduce the sheets
 
-O cartão usa o CSS e o controlador do [protótipo Dueto](../v2/dueto.html). Cada sprite é desenhado em SVG com pixels inteiros e animação em passos. As pranchas capturam o primeiro quadro de cada expressão. Cada sequência mostra os quatro quadros, da esquerda para a direita.
+The card uses the CSS and the controller from the [Dueto prototype](../v2/dueto.html). Each sprite is drawn in SVG with whole pixels and stepped animation. The sheets capture the first frame of each expression. Each sequence shows the four frames, from left to right.
 
-Na raiz do repositório, com Chrome instalado no macOS:
+From the repository root, with Chrome installed on macOS:
 
 ```sh
 npm install --prefix /tmp/pomodoro-preview playwright@1.63.0

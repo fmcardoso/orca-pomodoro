@@ -2,7 +2,7 @@ const params = new URLSearchParams(location.search)
 const gallery = document.getElementById('gallery')
 const still = params.has('sheet')
 const states = ['running', 'paused', 'finished']
-const labels = ['Concentrado', 'Dormindo', 'Feliz']
+const labels = ['Focused', 'Sleeping', 'Happy']
 const theme = params.get('theme')
 let dark = theme === 'dark' || (theme !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
 let selected = 0
@@ -14,7 +14,7 @@ function pair(index, state) {
   const sample = document.createElement('div')
   sample.className = 'pair'
   const preview = document.createElement('iframe')
-  preview.title = tomatoes[index].name + ' no Dueto · ' + spriteStates[state]
+  preview.title = tomatoes[index].name + ' in Dueto · ' + spriteStates[state]
   preview.width = 340
   preview.height = 250
   preview.src = 'card.html?' + new URLSearchParams({
@@ -29,9 +29,9 @@ function pair(index, state) {
 
 function sheet() {
   gallery.className = 'sheet'
-  gallery.innerHTML = '<header><h1>Tomates de pixel</h1><p>Dueto em tamanho real · detalhe ampliado 4×</p></header>'
+  gallery.innerHTML = '<header><h1>Pixel tomatoes</h1><p>Dueto at actual size · detail enlarged 4×</p></header>'
   const table = document.createElement('table')
-  table.innerHTML = '<thead><tr><th class="theme">' + (dark ? 'Tema escuro' : 'Tema claro') +
+  table.innerHTML = '<thead><tr><th class="theme">' + (dark ? 'Dark theme' : 'Light theme') +
     '</th>' + labels.map(label => '<th scope="col">' + label + '</th>').join('') + '</tr></thead><tbody></tbody>'
   const tbody = table.querySelector('tbody')
   tomatoes.forEach((pet, i) => {
@@ -52,7 +52,7 @@ function frameStrips() {
     const strip = document.createElement('article')
     strip.id = 'strip-' + (i + 1)
     strip.innerHTML = '<header><h1>' + number(i) + ' · ' + pet.name +
-      '</h1><p>Quatro quadros por estado · ordem de leitura →</p></header>'
+      '</h1><p>Four frames per state · read left to right →</p></header>'
     const table = document.createElement('table')
     table.innerHTML = '<tbody></tbody>'
     states.forEach((state, s) => {
@@ -82,13 +82,13 @@ function swap() {
 }
 function chooser() {
   gallery.className = 'chooser'
-  gallery.innerHTML = `<header><div><h1>Tomates de pixel</h1><p>Escolha o companheiro do Dueto.</p></div>
-    <fieldset class="segments"><legend>Tema</legend>${radio('theme','light','Claro',!dark)}${radio('theme','dark','Escuro',dark)}</fieldset></header>
-    <fieldset class="pets"><legend>Tomate</legend>${tomatoes.map((pet,i) => radio('pet',i,
+  gallery.innerHTML = `<header><div><h1>Pixel tomatoes</h1><p>Pick the companion for Dueto.</p></div>
+    <fieldset class="segments"><legend>Theme</legend>${radio('theme','light','Light',!dark)}${radio('theme','dark','Dark',dark)}</fieldset></header>
+    <fieldset class="pets"><legend>Tomato</legend>${tomatoes.map((pet,i) => radio('pet',i,
       '<span class="thumbnail">' + spriteSVG(i,'running',{frame:0}) + '</span><b>' + number(i) + ' · ' + pet.name + '</b>', i === selected)).join('')}</fieldset>
     <section class="detail"><div class="detail-head"><div><h2 id="detail-name"></h2><p id="detail-grid"></p></div>
-      <fieldset class="segments"><legend>Expressão</legend>${states.map((s,i) => radio('pose',s,labels[i],s === pose)).join('')}</fieldset></div>
-      <div class="scale"><span>Cartão Dueto · 1×</span><span>Sprite · 4×</span></div><div id="sample"></div>
+      <fieldset class="segments"><legend>Expression</legend>${states.map((s,i) => radio('pose',s,labels[i],s === pose)).join('')}</fieldset></div>
+      <div class="scale"><span>Dueto card · 1×</span><span>Sprite · 4×</span></div><div id="sample"></div>
     </section>`
   gallery.addEventListener('change', event => {
     if (event.target.name === 'pet') selected = Number(event.target.value)

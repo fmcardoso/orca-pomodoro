@@ -1,23 +1,23 @@
-# Expressões do Costelão
+# Costelão (big rib) expressions
 
-[Abrir a prévia animada](index.html) · [Prancha clara](sheet.png) · [Prancha escura](sheet-dark.png)
+[Open the animated preview](index.html) · [Light sheet](sheet.png) · [Dark sheet](sheet-dark.png)
 
-Cada linha mostra o mesmo tomate frisado de 32 × 32 px. A primeira traz o [03 Costelão original](../v3-tomato/README.md). Nas três colunas, compare o rosto concentrado, dormindo e feliz. O sprite ocupa 64 × 64 px no cartão Dueto e 256 × 256 px na ampliação.
+Each row shows the same ribbed 32 × 32 px tomato. The first is the [original 03 Costelão](../v3-tomato/README.md). In the three columns, compare the focused, sleeping and happy faces. The sprite is 64 × 64 px on the Dueto (duet) card and 256 × 256 px in the enlarged view.
 
-| Rosto | Expressão | Quadros |
+| Face | Expression | Frames |
 | --- | --- | --- |
-| Referência · Original | Sobrancelhas inclinadas do desenho anterior. | [Sequência original](ref-frames.png) |
-| A · Pontinho | Olhos de botão, blush discreto e sorriso curto. Ao comemorar, fecha os olhos em dois arcos. | [Sequência A](a-frames.png) |
-| B · Brilho | Olhos altos com um pixel de luz e bochechas cheias. Os olhos se abrem mais na comemoração. | [Sequência B](b-frames.png) |
-| C · Sossego | Pálpebras baixas e sorriso tranquilo. O sorriso se abre e os olhos formam arcos largos na comemoração. | [Sequência C](c-frames.png) |
+| Reference · Original | Slanted eyebrows from the previous design. | [Original sequence](ref-frames.png) |
+| A · Pontinho (little dot) | Button eyes, subtle blush and a short smile. When celebrating, the eyes close into two arcs. | [Sequence A](a-frames.png) |
+| B · Brilho (shine) | Tall eyes with a one-pixel highlight and full cheeks. The eyes open wider when celebrating. | [Sequence B](b-frames.png) |
+| C · Sossego (calm) | Lowered eyelids and a calm smile. When celebrating, the smile opens and the eyes form wide arcs. | [Sequence C](c-frames.png) |
 
-**Minha escolha é A · Pontinho.** No cartão, os dois pontos deixam espaço para ler o sorriso. Os olhos fechados e o Z distinguem a pausa até na escala menor.
+**My pick is A · Pontinho.** On the card, the two dots leave room to read the smile. The closed eyes and the Z set the pause apart even at the smaller scale.
 
-Na prévia, selecione o rosto, a expressão e o tema. Pausar ou retomar o timer também troca a expressão. Cada sequência tem quatro quadros, lidos da esquerda para a direita. Com movimento reduzido, a prévia exibe o primeiro quadro.
+In the preview, select the face, the expression and the theme. Pausing or resuming the timer also switches the expression. Each sequence has four frames, read from left to right. With reduced motion, the preview shows the first frame.
 
-## Reproduzir as imagens
+## Reproduce the images
 
-O HTML abre direto no navegador. A captura usa o mesmo cartão e congela o relógio e a animação no primeiro quadro. Para gerar os PNGs na raiz do repositório em um Mac com Chrome instalado, execute:
+The HTML opens directly in the browser. The capture uses the same card and freezes the clock and the animation on the first frame. To generate the PNGs from the repository root on a Mac with Chrome installed, run:
 
 ```sh
 npm install --prefix /tmp/pomodoro-preview playwright@1.63.0

@@ -2,8 +2,8 @@
   "manifestVersion": 2,
   "id": "pomodoro",
   "name": "Pomodoro",
-  "version": "0.2.0",
-  "description": "Um tomate de estimação que conta seus pomodoros: timer na barra de status, painel animado e aviso no fim de cada foco.",
+  "version": "0.3.0",
+  "description": "A pet tomato that counts your pomodoros: a status bar timer, an animated panel, a break after each focus, and a notification when each one ends.",
   "license": "MIT",
   "engines": {
     "orca": ">=1.4.274"
@@ -25,12 +25,13 @@
       }
     ],
     "commands": [
-      { "id": "pomodoro.toggle", "title": "Pomodoro: Iniciar/Pausar" },
-      { "id": "pomodoro.reset", "title": "Pomodoro: Resetar timer" },
-      { "id": "pomodoro.resetDay", "title": "Pomodoro: Zerar contagem do dia" },
-      { "id": "pomodoro.open", "title": "Pomodoro: Abrir Pomodoro" },
-      { "id": "pomodoro.focus25", "title": "Pomodoro: Foco 25 min" },
-      { "id": "pomodoro.focus50", "title": "Pomodoro: Foco 50 min" }
+      { "id": "pomodoro.toggle", "title": "Pomodoro: Start/Pause" },
+      { "id": "pomodoro.reset", "title": "Pomodoro: Reset timer" },
+      { "id": "pomodoro.resetDay", "title": "Pomodoro: Reset day count" },
+      { "id": "pomodoro.break", "title": "Pomodoro: Start break" },
+      { "id": "pomodoro.open", "title": "Pomodoro: Open Pomodoro" },
+      { "id": "pomodoro.focus25", "title": "Pomodoro: Focus 25 min" },
+      { "id": "pomodoro.focus50", "title": "Pomodoro: Focus 50 min" }
     ],
     "keybindings": [{ "command": "pomodoro.open", "key": "Mod+Shift+P" }],
     "statusBarItems": [
@@ -38,15 +39,15 @@
         "id": "pomodoro",
         "text": "🍅 25:00 · 0",
         "tone": "neutral",
-        "tooltip": "Pomodoro: clique para abrir o painel",
+        "tooltip": "Pomodoro: click to open the panel",
         "command": "pomodoro.open"
       }
     ],
     "settings": [
       {
         "key": "focusMinutes",
-        "title": "Minutos de foco",
-        "description": "Duração padrão de um pomodoro, em minutos (1 a 180).",
+        "title": "Focus minutes",
+        "description": "Default length of a pomodoro, in minutes (1 to 180).",
         "type": "integer",
         "default": 25,
         "minimum": 1,

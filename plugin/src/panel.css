@@ -49,7 +49,7 @@ main {
   margin-inline: auto;
 }
 main:is([data-state="paused"], [data-state="idle"]) { --signal: var(--soft); }
-main[data-state="finished"] { --signal: var(--leaf); }
+main[data-state="finished"], main[data-kind="break"][data-state="running"] { --signal: var(--leaf); }
 button, input { font: inherit; color: inherit; }
 button { cursor: pointer; border: 0; padding: 0; background: transparent; }
 button:disabled, input:disabled { cursor: default; }
@@ -74,7 +74,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--ring); outl
 .dial { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke-width: 3.25; }
 .track { stroke: color-mix(in srgb, var(--signal) 13%, var(--paper)); }
 .arc { stroke: var(--signal); stroke-linecap: round; }
-.readout { flex: 0 1 133px; }
+.readout { flex: 0 1 auto; min-width: 133px; }
 .status {
   display: inline-flex; align-items: center; gap: 6px;
   font-size: 12px; font-weight: 550; color: var(--soft);
@@ -87,7 +87,7 @@ button:focus-visible, input:focus-visible { outline: 2px solid var(--ring); outl
 .primary, .reset { justify-content: center; height: 30px; min-width: 30px; border-radius: 8px; }
 .primary {
   background: var(--button); color: var(--button-text);
-  gap: 5px; padding-inline: 10px; font-size: 12px; font-weight: 600;
+  gap: 5px; padding-inline: 10px; font-size: 12px; font-weight: 600; white-space: nowrap;
 }
 .reset { border: 1px solid var(--edge); color: var(--soft); background: var(--paper); }
 .reset:disabled { opacity: .45; }
@@ -120,7 +120,7 @@ main[data-state="running"] .icon-play, main:not([data-state="running"]) .icon-pa
   .pixel-pet .reel { animation: none; }
 }
 
-/* Duração and Hoje rows. */
+/* Duration, Break and Today rows. */
 .settings, footer { display: flex; align-items: center; gap: 9px; padding: 9px 14px; border-top: 1px solid var(--edge); }
 .row-label { font-size: 12px; color: var(--soft); margin-right: auto; }
 .choices { display: inline-flex; padding: 2px; border-radius: 7px; background: var(--muted); }
@@ -139,9 +139,19 @@ main[data-state="running"] .icon-play, main:not([data-state="running"]) .icon-pa
   padding: 2px 0; appearance: textfield; color: var(--ink); font-size: 12px;
 }
 input::-webkit-inner-spin-button, input::-webkit-outer-spin-button { appearance: none; }
+.breaks[hidden] { display: none; }
+.unit { color: var(--soft); font-size: 11px; }
+.skip { min-height: 25px; color: var(--soft); font-size: 11.5px; }
+.skip:hover { text-decoration: underline; }
 .settings:has(input:disabled) :is(.choices, .custom) { opacity: .75; }
-footer { justify-content: space-between; padding-block: 5px; }
+footer { padding-block: 5px; }
 .today { font-size: 12px; font-weight: 560; }
+.count-steps { display: inline-flex; gap: 4px; margin-right: auto; }
+.step {
+  width: 22px; height: 22px; border: 1px solid var(--edge); border-radius: 6px;
+  color: var(--soft); background: var(--paper); font-size: 14px; line-height: 1;
+}
+.step:disabled { opacity: .45; }
 .clear { min-height: 25px; color: var(--soft); font-size: 11.5px; }
 .clear:hover { text-decoration: underline; }
 .clear.confirming { color: var(--danger); font-weight: 600; }

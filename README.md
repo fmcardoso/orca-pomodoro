@@ -1,29 +1,36 @@
-# Pomodoro 🍅 — um tomate de estimação para o Orca
+# Pomodoro 🍅 — a pet tomato for Orca
 
-Plugin do Orca com um timer Pomodoro que mora na barra de status e num painel animado na
-barra lateral direita.
+An Orca plugin with a Pomodoro timer that lives in the status bar and in an animated panel in the
+right sidebar.
 
-- **Barra de status:** `🍅 18:42 · 3` (tempo restante · pomodoros de hoje). Cor de destaque
-  enquanto roda, neutra quando pausado/parado (`⏸` quando pausado), verde ao terminar
-  (`🍅 Pronto! · 4`). Clique para abrir o painel.
-- **Painel (v0.2, desenho A · Dueto):** um cartão compacto (~250 px de altura a 340 px de
-  largura). À esquerda, o tomate **Costelão** em pixel art 32 × 32 (rosto A · Pontinho) dentro de
-  um anel de progresso; à direita, o estado (Em foco / Pausado / Concluído / Pronto), a contagem
-  regressiva e **Pausar/Iniciar/Continuar** com o botão de resetar. Abaixo, **Duração** com os
-  atalhos 25 / 50 e um campo de minutos (1–180), e **Hoje: N 🍅** com **Zerar dia** (pede
-  confirmação com um segundo clique). O tomate fica concentrado (piscando) enquanto roda, dorme com
-  um "Z" quando pausado ou parado, e festeja com brilhos ao terminar. Segue o tema claro/escuro do
-  Orca e mostra um quadro parado com `prefers-reduced-motion`.
-- **Aviso:** ao fim de um pomodoro, notificação do sistema "Pomodoro concluído 🍅" com a contagem
-  do dia. (Ainda não há timer de pausa.)
+- **Status bar:** `🍅 18:42 · 3` (time left · pomodoros today). Accent color while running,
+  neutral when paused or stopped (`⏸` when paused), green when done (`🍅 Done! · 4`). Click it to
+  open the panel.
+- **Panel (v0.2, design A · Dueto):** a compact card (~250 px tall at 340 px wide). On the left,
+  the **Costelão** tomato in 32 × 32 pixel art (face A · Pontinho) inside a progress ring; on the
+  right, the state (Focus / Paused / Done / Ready), the countdown, and **Pause/Start/Resume**
+  next to the reset button. Below, **Duration** with 25 / 50 shortcuts and a minutes field
+  (1–180), and **Today: N 🍅** with **−** and **+** buttons to correct the count by one (it
+  never goes below zero) and **Reset day** (asks for a second click to confirm). The tomato
+  looks focused (and blinks) while running, sleeps with a "Z" when paused or stopped, and
+  celebrates with sparkles when done. It follows Orca's light/dark theme and shows a still frame
+  under `prefers-reduced-motion`.
+- **Breaks:** when a pomodoro ends, the panel already proposes the break: the main button becomes
+  **Take break** and a **Break** row appears with **5 / 15 min** (5 is preselected; on the 4th
+  pomodoro of the day, and every 4th after that, 15 is preselected). Pick 5 or 15 and click
+  **Take break**, or click **Skip** to start another pomodoro right away. A break has a green
+  ring, the tomato sleeps, the status bar shows `☕ 04:32 · 3`, and it does not count as a
+  pomodoro. When it ends, **Start** goes back to a pomodoro of the length you had before.
+- **Notifications:** when a pomodoro ends, a system notification "Pomodoro done 🍅" with the day's
+  count and the suggested break; when a break ends, "Break over ☕".
 
-| Em foco | Pausado | Concluído | Escuro |
-| --- | --- | --- | --- |
-| ![](docs/screenshots/v0.2/running-light.png) | ![](docs/screenshots/v0.2/paused-light.png) | ![](docs/screenshots/v0.2/finished-light.png) | ![](docs/screenshots/v0.2/running-dark.png) |
+| Focus | Paused | Done (break proposed) | Break | Dark |
+| --- | --- | --- | --- | --- |
+| ![](docs/screenshots/v0.2/running-light.png) | ![](docs/screenshots/v0.2/paused-light.png) | ![](docs/screenshots/v0.2/finished-light.png) | ![](docs/screenshots/v0.2/break-running-light.png) | ![](docs/screenshots/v0.2/running-dark.png) |
 
-> Essas imagens são o painel real (`plugin/src/panel.html`) renderizado no Chromium com um `orca`
-> simulado e as cores padrão do desenho; dentro do Orca as cores vêm do tema ativo. Para
-> regenerar (na raiz do repositório, depois de `npm install`):
+> These images are the real panel (`plugin/src/panel.html`) rendered in Chromium with a stand-in
+> `orca` and the design's default colors; inside Orca the colors come from the active theme. To
+> regenerate them (from the repository root, after `npm install`):
 >
 > ```sh
 > npm install --prefix /tmp/pomodoro-preview playwright@1.63.0
@@ -32,67 +39,73 @@ barra lateral direita.
 > node docs/screenshots/v0.2/capture.cjs
 > ```
 
-**Dentro do Orca** (`orca plugin shot`, tema escuro do Orca, 27/11/2026):
+**Inside Orca** (`orca plugin shot`, Orca's dark theme):
 
-| Pronto | Em foco | Pausado | Concluído |
-| --- | --- | --- | --- |
-| ![](docs/screenshots/v0.2/orca/panel-idle.png) | ![](docs/screenshots/v0.2/orca/panel-running.png) | ![](docs/screenshots/v0.2/orca/panel-paused.png) | ![](docs/screenshots/v0.2/orca/panel-finished.png) |
+| Ready | Focus | Paused | Done | Break |
+| --- | --- | --- | --- | --- |
+| ![](docs/screenshots/v0.2/orca/panel-idle.png) | ![](docs/screenshots/v0.2/orca/panel-running.png) | ![](docs/screenshots/v0.2/orca/panel-paused.png) | ![](docs/screenshots/v0.2/orca/panel-finished.png) | ![](docs/screenshots/v0.2/orca/panel-break.png) |
 
-Barra de status: ![parado](docs/screenshots/v0.2/orca/status-bar-idle.png) ·
-![rodando](docs/screenshots/v0.2/orca/status-bar-running.png) ·
-![concluído](docs/screenshots/v0.2/orca/status-bar-finished.png)
+Status bar: ![stopped](docs/screenshots/v0.2/orca/status-bar-idle.png) ·
+![running](docs/screenshots/v0.2/orca/status-bar-running.png) ·
+![done](docs/screenshots/v0.2/orca/status-bar-finished.png) ·
+![break](docs/screenshots/v0.2/orca/status-bar-break.png)
 
-Rodadas de desenho: [layouts compactos](docs/design/v2/README.md) ·
-[seis tomates de pixel](docs/design/v3-tomato/README.md) ·
-[rostos do Costelão](docs/design/v4-costelao/README.md). As capturas do v0.1 continuam em
-`docs/screenshots/preview-*.png`.
+Design rounds: [compact layouts](docs/design/v2/README.md) ·
+[six pixel tomatoes](docs/design/v3-tomato/README.md) ·
+[Costelão's faces](docs/design/v4-costelao/README.md).
 
-## Instalar e ativar
+## Install and enable
 
-O plugin fica em `plugin/` (a raiz do repositório só tem docs e o TypeScript para checar
-tipos). Carregue como pasta de desenvolvimento (chave `local.pomodoro`):
+The plugin lives in `plugin/` (the repository root only has docs and the TypeScript compiler for
+type checking). Load it as a development folder (key `local.pomodoro`):
 
 ```sh
 orca plugin dev load ~/playground/orca-pomodoro/plugin --json
 ```
 
-Na primeira vez o Orca responde `approval_required` com a lista de acessos e um comando com
-`--approve <fingerprint>`; confira e rode esse comando. Acessos pedidos:
+The first time, Orca answers `approval_required` with the list of accesses and a command with
+`--approve <fingerprint>`; check the list and run that command. It will ask for:
 
-- roda código próprio num processo Node (`trusted-worker`);
-- `notifications:show` — notificação ao fim do pomodoro;
-- `storage:own` — guarda o timer e a contagem diária;
-- `settings:own` — lê a configuração `focusMinutes`.
+- running its own code in a Node process (`trusted-worker`);
+- `notifications:show` — the notification when a pomodoro ends;
+- `storage:own` — keeps the timer and the daily count;
+- `settings:own` — reads the `focusMinutes` setting.
 
-Para desenvolver: `orca plugin dev watch plugin --check --shot plugin/.orca/shots --json`.
+Adding or renaming a command or shortcut in `orca-plugin.json` changes the approval, so the plugin
+stops running until you approve it again.
 
-## Usar
+To develop: `orca plugin dev watch plugin --check --shot plugin/.orca/shots --json`.
 
-- Clique no item `🍅` da barra de status, ou **Mod+Shift+P** (Cmd+Shift+P no macOS), para abrir o
-  painel.
-- Paleta de comandos: **Pomodoro: Iniciar/Pausar**, **Resetar timer**, **Zerar contagem do dia**,
-  **Abrir Pomodoro**, **Foco 25 min**, **Foco 50 min**.
-- Configurações → Pomodoro → **Minutos de foco** (`focusMinutes`, 1–180, padrão 25): duração
-  usada quando o timer está parado.
+## Usage
 
-## Como funciona
+- Click the `🍅` status bar item, or press **Mod+Shift+P** (Cmd+Shift+P on macOS), to open the
+  panel.
+- Command palette: **Pomodoro: Start/Pause**, **Reset timer**, **Reset day count**,
+  **Open Pomodoro**, **Focus 25 min**, **Focus 50 min**, **Start break** (the suggested one).
+- Settings → Pomodoro → **Focus minutes** (`focusMinutes`, 1–180, default 25): the length used
+  when the timer is stopped.
 
-- O worker (`src/worker.ts`) é o dono do timer. O estado fica em `orca.storage` (chave
-  `pomodoro`) como fatos de relógio — `endsAt` enquanto roda, `pausedRemainingMs` quando pausado —
-  e nunca como contador de ticks. Por isso reiniciar o Orca ou recarregar o worker mantém o tempo
-  certo; um pomodoro que acabou com o Orca fechado é contado uma vez (no dia em que terminou) e
-  notificado uma vez quando o worker volta.
-- A contagem é guardada por data local (`YYYY-MM-DD`), então vira sozinha à meia-noite.
-- O worker atualiza a barra de status uma vez por segundo só enquanto roda, avisa os painéis
-  abertos com `panels.post`, e o painel também escuta `storage.onDidChange`.
-- Abrir o painel: o host não tem um método para isso, então o worker executa
-  `orca plugin open <chave> --panel pomodoro` via `child_process` (CLI de `ORCA_CLI_COMMAND`, do
-  bundle do app, ou `orca` no PATH), descobrindo a própria chave com `orca plugin list`.
+## How it works
 
-## Desenvolvimento
+- The worker (`src/worker.ts`) owns the timer. Its state lives in `orca.storage` (key
+  `pomodoro`) as wall-clock facts — `endsAt` while running, `pausedRemainingMs` while paused —
+  never as a tick counter. So restarting Orca or reloading the worker keeps the right time; a
+  pomodoro that ended while Orca was closed is counted once (on the day it ended) and notified
+  once when the worker comes back.
+- A timer is a `focus` or a `break`. A break never counts, and remembers the pomodoro length
+  (`focusMs`) so the next pomodoro starts at the length you had before.
+- Counts are stored by local date (`YYYY-MM-DD`), so they roll over by themselves at midnight.
+- The worker updates the status bar once a second only while running, tells open panels with
+  `panels.post`, and the panel also listens to `storage.onDidChange`.
+- Opening the panel: the host has no method for it, so the worker runs
+  `orca plugin open <key> --panel pomodoro` through `child_process` (the CLI from
+  `ORCA_CLI_COMMAND`, from the app bundle, or `orca` on the PATH), finding its own key with
+  `orca plugin list`.
+
+## Development
 
 ```sh
-npm install           # só o TypeScript, na raiz (fora da pasta do plugin)
+npm install           # TypeScript only, at the root (outside the plugin folder)
 cd plugin
 npx tsc -p .
 orca plugin test . --json
@@ -100,7 +113,7 @@ orca plugin validate . --json
 orca plugin check . --json
 ```
 
-Arquivos (em `plugin/`): `src/timer.ts` (lógica pura), `src/worker.ts`, `src/open-panel.ts`,
-`src/panel.html` + `panel.css` + `panel-main.ts` (DOM) + `panel-view.ts` (lógica testável do
-painel), `src/sprites.ts` (o Costelão, quadro a quadro, igual ao das rodadas de desenho), testes em
+Files (in `plugin/`): `src/timer.ts` (pure logic), `src/worker.ts`, `src/open-panel.ts`,
+`src/panel.html` + `panel.css` + `panel-main.ts` (DOM) + `panel-view.ts` (the panel's testable
+logic), `src/sprites.ts` (Costelão, frame by frame, the same as in the design rounds), tests in
 `src/*.test.ts`.

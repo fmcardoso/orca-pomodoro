@@ -10,7 +10,7 @@ async function capture(browser) {
   for (const theme of ['light', 'dark']) {
     await page.goto(url + '?sheet&theme=' + theme)
     const cards = await page.locator('iframe').all()
-    if (cards.length !== 12) throw new Error('A prancha precisa de doze cartões')
+    if (cards.length !== 12) throw new Error('The sheet needs twelve cards')
     for (const card of cards) await card.contentFrame().locator('.portrait .pixel-pet').waitFor()
     await page.locator('.sheet').screenshot({path: join(__dirname, theme === 'light' ? 'sheet.png' : 'sheet-dark.png')})
   }

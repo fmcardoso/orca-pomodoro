@@ -19,9 +19,14 @@ const primaryLabel = $('primary-label')
 const resetBtn = $<HTMLButtonElement>('reset')
 const minutesInput = $<HTMLInputElement>('minutes')
 const todayLabel = $('today')
+const countMinus = $<HTMLButtonElement>('count-minus')
+const countPlus = $<HTMLButtonElement>('count-plus')
 const resetDayBtn = $<HTMLButtonElement>('reset-day')
 const errorBox = $('error')
 const presets = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-preset]'))
+const breaksRow = $('breaks')
+const breakChoices = Array.from(document.querySelectorAll<HTMLButtonElement>('[data-break]'))
+const skipBreakBtn = $<HTMLButtonElement>('skip-break')
 
 const SVG_NS = 'http://www.w3.org/2000/svg'
 let ticker: ReturnType<typeof setInterval> | null = null
@@ -66,6 +71,7 @@ drawPet(lastFace)
 
 function render(view: PanelView): void {
   app.dataset.state = view.status
+  app.dataset.kind = view.kind
   app.classList.toggle('hours', view.hours)
   if (view.face !== lastFace) {
     lastFace = view.face
@@ -88,7 +94,12 @@ function render(view: PanelView): void {
     button.disabled = !view.canEditMinutes
     button.setAttribute('aria-pressed', String(Number(button.dataset.preset) === view.minutes))
   }
+  breaksRow.hidden = !view.offerBreak
+  for (const button of breakChoices) {
+    button.setAttribute('aria-pressed', String(Number(button.dataset.break) === view.breakMinutes))
+  }
   todayLabel.textContent = view.todayLabel
+  countMinus.disabled = !view.canDecrement
 
   if (view.status !== lastStatus) {
     lastStatus = view.status
@@ -99,7 +110,7 @@ function render(view: PanelView): void {
 }
 
 function showError(message: string): void {
-  errorBox.textContent = `Ops: ${message}`
+  errorBox.textContent = `Oops: ${message}`
   errorBox.hidden = false
 }
 
@@ -134,6 +145,10 @@ function inputMinutes(): number {
   return Number(minutesInput.value)
 }
 
+for (const button of breakChoices) {
+  button.addEventListener('click', () => controller.chooseBreak(Number(button.dataset.break)))
+}
+skipBreakBtn.addEventListener('click', () => void controller.skipBreak(inputMinutes()))
 primaryBtn.addEventListener('click', () => void controller.primary(inputMinutes()))
 resetBtn.addEventListener('click', () => void controller.reset())
 minutesInput.addEventListener('change', () => void controller.setMinutes(inputMinutes()))
@@ -147,12 +162,15 @@ for (const button of presets) {
   })
 }
 
-// "Zerar dia" asks once more before clearing today's count.
+countMinus.addEventListener('click', () => void controller.adjustCount(-1))
+countPlus.addEventListener('click', () => void controller.adjustCount(1))
+
+// "Reset day" asks once more before clearing today's count.
 let confirmTimer: ReturnType<typeof setTimeout> | null = null
 resetDayBtn.addEventListener('click', () => {
   if (!resetDayBtn.classList.contains('confirming')) {
     resetDayBtn.classList.add('confirming')
-    resetDayBtn.textContent = 'Confirmar?'
+    resetDayBtn.textContent = 'Confirm?'
     confirmTimer = setTimeout(disarm, 3000)
     return
   }
@@ -163,7 +181,7 @@ function disarm(): void {
   if (confirmTimer) clearTimeout(confirmTimer)
   confirmTimer = null
   resetDayBtn.classList.remove('confirming')
-  resetDayBtn.textContent = 'Zerar dia'
+  resetDayBtn.textContent = 'Reset day'
 }
 
 // Stay in sync: the worker posts every change; storage changes cover a post we missed.

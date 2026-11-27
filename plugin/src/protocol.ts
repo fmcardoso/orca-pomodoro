@@ -15,12 +15,16 @@ declare module 'orca' {
     'pomodoro.get': { output: Snapshot }
     /** Starts a fresh pomodoro (of `minutes`, when given) or resumes a paused one. */
     'pomodoro.start': { input: { minutes?: number }; output: Snapshot }
+    /** Starts a break of `minutes` (5 or 15 in the panel) after a pomodoro. */
+    'pomodoro.startBreak': { input: { minutes: number }; output: Snapshot }
     'pomodoro.pause': { output: Snapshot }
     'pomodoro.toggle': { output: Snapshot }
     'pomodoro.reset': { output: Snapshot }
     /** Changes the length while idle or finished. */
     'pomodoro.setMinutes': { input: { minutes: number }; output: Snapshot }
     'pomodoro.resetDay': { output: Snapshot }
+    /** Corrects today's count by 1 (the − and + buttons): `delta` is -1 or 1. */
+    'pomodoro.adjustCount': { input: { delta: -1 | 1 }; output: Snapshot }
   }
   interface PluginPanelEvents {
     'pomodoro.state': Snapshot

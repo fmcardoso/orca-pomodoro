@@ -2,21 +2,21 @@
 const costelaoIndex = tomatoes.findIndex(tomato => tomato.name === 'Costelão')
 const costelao = tomatoes[costelaoIndex]
 const faceOptions = [
-  { id: 'ref', name: 'Original', detail: '03 Costelão · referência de v3' },
+  { id: 'ref', name: 'Original', detail: '03 Costelão · reference from v3' },
   {
-    id: 'a', name: 'Pontinho', detail: 'Olhos de botão e um sorriso curto.',
+    id: 'a', name: 'Pontinho', detail: 'Button eyes and a short smile.',
     eyes: [10, 20, 17], awake: ['II', 'II'], asleep: ['I.I', 'III'],
     happy: ['IIII', 'I..I'], smile: ['I..I', '.II.'], cheeks: ['BBB'],
     laugh: ['IIIII', 'IIIII', '.IBI.', '..I..']
   },
   {
-    id: 'b', name: 'Brilho', detail: 'Um ponto de luz em cada olho e bochechas redondas.',
+    id: 'b', name: 'Brilho', detail: 'A highlight dot in each eye and round cheeks.',
     eyes: [9, 20, 16], awake: ['III', 'IHI', 'III', '.I.'], asleep: ['I..I', 'IIII'],
     happy: ['.II.', 'IHII', 'IIII', '.II.'], smile: ['I..I', 'IIII'], cheeks: ['.BB.', 'BBBB'],
     laugh: ['IIIII', 'IIIII', 'IBBBI', '.III.']
   },
   {
-    id: 'c', name: 'Sossego', detail: 'Pálpebras baixas e um sorriso tranquilo.',
+    id: 'c', name: 'Sossego', detail: 'Lowered eyelids and a calm smile.',
     eyes: [9, 20, 17], awake: ['DDDD', '.II.'], asleep: ['I..I', 'IIII'],
     happy: ['IIIII', 'I...I'], smile: ['I...I', '.III.'], cheeks: ['BBB'],
     laugh: ['IIIIII', '.IIII.', '.IBBI.']

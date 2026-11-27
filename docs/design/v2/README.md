@@ -1,32 +1,30 @@
-# Três versões compactas do Pomodoro
+# Three compact versions of the Pomodoro
 
-![Comparação do painel atual com Dueto, Ninho e Régua](compare.png)
+All three are 340 px wide, like the original panel. The v0.1 panel was 516 px tall, and the reductions below are measured against that.
 
-Cada coluna tem os mesmos 340 px da captura original. A linha pontilhada marca o fim do conteúdo, incluindo o espaçamento do painel. O v0.1 ocupa 516 px de altura.
-
-| Protótipo interativo | Desenho | Altura | Redução |
+| Interactive prototype | Design | Height | Reduction |
 | --- | --- | ---: | ---: |
-| [A · Dueto](dueto.html) | Tomate dentro do anel, ao lado do relógio e do botão com texto. | 250 px | 52% |
-| [B · Ninho](ninho.html) | Tomate central entre dois botões redondos, com o relógio logo abaixo. | 271 px | 47% |
-| [C · Régua](regua.html) | Tomate, tempo e controles na mesma linha, com uma régua de progresso logo abaixo. | 196 px | 62% |
+| [A · Dueto](dueto.html) | Tomato inside the ring, next to the clock and the button with a label. | 250 px | 52% |
+| [B · Ninho](ninho.html) | Tomato in the center between two round buttons, with the clock right below. | 271 px | 47% |
+| [C · Régua](regua.html) | Tomato, time and controls on one row, with a progress ruler right below. | 196 px | 62% |
 
-**Recomendação:** Régua. Libera 320 px de altura para o restante da barra lateral. O relógio continua fácil de ler e o tomate de cerca de 42 px ainda mostra quando está focado, dormindo ou comemorando.
+**Recommendation:** Régua. It frees 320 px of height for the rest of the sidebar. The clock stays easy to read, and the tomato, at about 42 px, still shows whether it is focused, sleeping or celebrating.
 
-| Variante | Em foco | Pausado | Concluído | Em foco no escuro |
+| Variant | Focus | Paused | Done | Focus in dark mode |
 | --- | --- | --- | --- | --- |
-| Dueto | [Claro](dueto-running-light.png) | [Claro](dueto-paused-light.png) | [Claro](dueto-finished-light.png) | [Escuro](dueto-running-dark.png) |
-| Ninho | [Claro](ninho-running-light.png) | [Claro](ninho-paused-light.png) | [Claro](ninho-finished-light.png) | [Escuro](ninho-running-dark.png) |
-| Régua | [Claro](regua-running-light.png) | [Claro](regua-paused-light.png) | [Claro](regua-finished-light.png) | [Escuro](regua-running-dark.png) |
+| Dueto | [Light](dueto-running-light.png) | [Light](dueto-paused-light.png) | [Light](dueto-finished-light.png) | [Dark](dueto-running-dark.png) |
+| Ninho | [Light](ninho-running-light.png) | [Light](ninho-paused-light.png) | [Light](ninho-finished-light.png) | [Dark](ninho-running-dark.png) |
+| Régua | [Light](regua-running-light.png) | [Light](regua-paused-light.png) | [Light](regua-finished-light.png) | [Dark](regua-running-dark.png) |
 
-## Experimentar
+## Try it
 
-Abra um dos três HTMLs diretamente no navegador. O protótipo simula a sessão e a contagem em memória. Recarregar restaura o exemplo. Para abrir um estado específico, acrescente, por exemplo, `?state=paused&theme=dark` ao endereço. Os estados disponíveis são `running`, `paused`, `finished` e `idle`. O tema acompanha o sistema e aceita `light` ou `dark` na URL.
+Open any of the three HTML files directly in the browser. The prototype simulates the session and the count in memory. Reloading restores the example. To open a specific state, append, for example, `?state=paused&theme=dark` to the address. The available states are `running`, `paused`, `finished` and `idle`. The theme follows the system and accepts `light` or `dark` in the URL.
 
-## Reproduzir as capturas
+## Reproduce the screenshots
 
-O script usa Playwright com Chromium, escala de 1 pixel por pixel CSS e relógio congelado. As capturas individuais têm a altura do conteúdo. A montagem usa o PNG arquivado do v0.1 em escala natural.
+The script uses Playwright with Chromium, a scale of 1 pixel per CSS pixel and a frozen clock. Each individual screenshot has the height of its content.
 
-Na raiz do repositório, usando o Chrome instalado no macOS:
+From the repository root, using the Chrome installed on macOS:
 
 ```sh
 npm install --prefix /tmp/pomodoro-preview playwright@1.63.0

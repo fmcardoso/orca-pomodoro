@@ -4,7 +4,7 @@ import { afterEach, assert, mockHost, mountWorker, test, type TestWorker } from 
 import { readFileSync } from 'node:fs'
 import * as main from './worker.ts'
 import { createPanelController, panelView, snapshotFromStorage, type PanelView } from './panel-view.ts'
-import { emptyStore, MINUTE, pause, reconcile, snapshot, start, type Snapshot } from './timer.ts'
+import { emptyStore, MINUTE, pause, reconcile, snapshot, start, startBreak, type Snapshot } from './timer.ts'
 
 const T0 = new Date(2026, 10, 26, 9, 0, 0).getTime()
 let now = T0
@@ -16,25 +16,25 @@ afterEach(async () => {
   now = T0
 })
 
-test('idle: sleeping face, full ring, Iniciar, minutes editable', () => {
+test('idle: sleeping face, full ring, Start, minutes editable', () => {
   const v = panelView(snapshot(emptyStore(), T0), T0)
   assert.equal(v.face, 'sleeping')
   assert.equal(v.clock, '25:00')
   assert.equal(v.ring, 1)
-  assert.equal(v.primaryLabel, 'Iniciar')
+  assert.equal(v.primaryLabel, 'Start')
   assert.equal(v.canEditMinutes, true)
   assert.equal(v.canReset, false)
-  assert.equal(v.todayLabel, 'Hoje: 0 🍅')
-  assert.deepEqual([v.statusLabel, v.hours], ['Pronto', false])
+  assert.equal(v.todayLabel, 'Today: 0 🍅')
+  assert.deepEqual([v.statusLabel, v.hours], ['Ready', false])
 })
 
 test('status labels match the Dueto card; long pomodoros show hours', () => {
   const running = snapshot(start(emptyStore(), T0, 90), T0)
   const v = panelView(running, T0)
-  assert.deepEqual([v.statusLabel, v.clock, v.hours], ['Em foco', '1:30:00', true])
-  assert.equal(panelView(snapshot(pause(start(emptyStore(), T0), T0), T0), T0).statusLabel, 'Pausado')
+  assert.deepEqual([v.statusLabel, v.clock, v.hours], ['Focus', '1:30:00', true])
+  assert.equal(panelView(snapshot(pause(start(emptyStore(), T0), T0), T0), T0).statusLabel, 'Paused')
   const done = reconcile(start(emptyStore(), T0), T0 + 25 * MINUTE).store
-  assert.equal(panelView(snapshot(done, T0 + 25 * MINUTE), T0 + 25 * MINUTE).statusLabel, 'Concluído')
+  assert.equal(panelView(snapshot(done, T0 + 25 * MINUTE), T0 + 25 * MINUTE).statusLabel, 'Done')
 })
 
 test('running: focused face, ring and clock follow the panel clock between posts', () => {
@@ -43,16 +43,75 @@ test('running: focused face, ring and clock follow the panel clock between posts
   assert.equal(v.face, 'focused')
   assert.equal(v.clock, '15:00')
   assert.equal(v.ring, 0.6)
-  assert.equal(v.primaryLabel, 'Pausar')
+  assert.equal(v.primaryLabel, 'Pause')
   assert.equal(v.canEditMinutes, false)
 })
 
-test('paused sleeps with Continuar; finished celebrates', () => {
+test('paused sleeps with Resume; finished celebrates', () => {
   const paused = panelView(snapshot(pause(start(emptyStore(), T0), T0 + MINUTE), T0 + MINUTE), T0 + 9 * MINUTE)
-  assert.deepEqual([paused.face, paused.primaryLabel, paused.clock], ['sleeping', 'Continuar', '24:00'])
+  assert.deepEqual([paused.face, paused.primaryLabel, paused.clock], ['sleeping', 'Resume', '24:00'])
   const done = reconcile(start(emptyStore(), T0), T0 + 25 * MINUTE).store
   const v = panelView(snapshot(done, T0 + 25 * MINUTE), T0 + 25 * MINUTE)
-  assert.deepEqual([v.face, v.primaryLabel, v.clock, v.ring, v.todayLabel], ['happy', 'Iniciar', '00:00', 1, 'Hoje: 1 🍅'])
+  assert.deepEqual([v.face, v.primaryLabel, v.clock, v.ring, v.todayLabel], ['happy', 'Take break', '00:00', 1, 'Today: 1 🍅'])
+  assert.deepEqual([v.offerBreak, v.breakMinutes, v.primaryAction], [true, 5, 'break'])
+})
+
+test('controller: a break is proposed, the pick sticks, Take break starts it, Start follows', async () => {
+  const { controller, last, errors, worker } = await controllerOnWorker()
+  await controller.primary(25)
+  now += 25 * MINUTE
+  await controller.refresh()
+  assert.deepEqual([last().primaryLabel, last().offerBreak, last().breakMinutes], ['Take break', true, 5])
+  controller.chooseBreak(15)
+  assert.equal(last().breakMinutes, 15)
+  await controller.refresh() // a repeated snapshot does not forget the pick
+  assert.equal(last().breakMinutes, 15)
+  await controller.primary(25)
+  assert.deepEqual([last().status, last().kind, last().statusLabel, last().clock, last().face], ['running', 'break', 'Break', '15:00', 'sleeping'])
+  assert.deepEqual([last().offerBreak, last().minutes, last().canEditMinutes], [false, 25, false])
+  now += 15 * MINUTE
+  await controller.refresh()
+  assert.deepEqual([last().statusLabel, last().primaryLabel, last().offerBreak], ['Break over', 'Start', false])
+  await controller.primary(25)
+  assert.deepEqual([last().kind, last().clock], ['focus', '25:00'])
+  // Skip: skip the offered break and start the next pomodoro.
+  now += 25 * MINUTE
+  await controller.refresh()
+  assert.equal(last().offerBreak, true)
+  await controller.skipBreak(25)
+  assert.deepEqual([last().status, last().kind], ['running', 'focus'])
+  assert.deepEqual(errors, [])
+  assert.deepEqual(worker.refusals, [])
+})
+
+test('controller: − and + correct today\'s count; − is off at zero', async () => {
+  const { controller, last, errors, worker } = await controllerOnWorker()
+  assert.deepEqual([last().todayCount, last().canDecrement], [0, false])
+  await controller.adjustCount(1)
+  await controller.adjustCount(1)
+  assert.deepEqual([last().todayLabel, last().canDecrement], ['Today: 2 🍅', true])
+  await controller.adjustCount(-1)
+  await controller.adjustCount(-1)
+  await controller.adjustCount(-1) // already zero: stays there
+  assert.deepEqual([last().todayLabel, last().canDecrement], ['Today: 0 🍅', false])
+  assert.deepEqual(errors, [])
+  assert.deepEqual(worker.refusals, [])
+})
+
+test('controller: the break pick is forgotten when the next pomodoro finishes; the length can change meanwhile', async () => {
+  const { controller, last } = await controllerOnWorker()
+  await controller.primary(25)
+  now += 25 * MINUTE
+  await controller.refresh()
+  controller.chooseBreak(15)
+  await controller.setMinutes(50) // set up the next pomodoro: the offer and the pick stay
+  assert.deepEqual([last().offerBreak, last().breakMinutes, last().minutes], [true, 15, 50])
+  await controller.skipBreak(50)
+  now += 50 * MINUTE
+  await controller.refresh()
+  assert.deepEqual([last().offerBreak, last().breakMinutes], [true, 5]) // back to the suggestion
+  const paused = panelView(snapshot(pause(startBreak(emptyStore(), T0, 5), T0 + MINUTE), T0 + MINUTE), T0 + MINUTE)
+  assert.equal(paused.statusLabel, 'Break paused')
 })
 
 test('a snapshot from before midnight shows zero for the new day', () => {
@@ -80,22 +139,22 @@ async function controllerOnWorker(host = mockHost()) {
   return { worker, controller, views, errors, last: () => views[views.length - 1] }
 }
 
-test('controller: Iniciar uses the minutes input, Pausar/Continuar, Resetar, Zerar dia', async () => {
+test('controller: Start uses the minutes input, Pause/Resume, Reset, Reset day', async () => {
   const { controller, last, errors, worker } = await controllerOnWorker()
-  assert.equal(last().primaryLabel, 'Iniciar')
+  assert.equal(last().primaryLabel, 'Start')
 
   await controller.primary(50)
   assert.deepEqual([last().status, last().clock], ['running', '50:00'])
   now += 10 * MINUTE
   await controller.primary(50)
-  assert.deepEqual([last().status, last().primaryLabel, last().clock], ['paused', 'Continuar', '40:00'])
+  assert.deepEqual([last().status, last().primaryLabel, last().clock], ['paused', 'Resume', '40:00'])
   await controller.primary(99) // resumes; the input is ignored while paused
   assert.deepEqual([last().status, last().clock], ['running', '40:00'])
   now += 40 * MINUTE
   await controller.refresh()
   assert.deepEqual([last().face, last().todayCount], ['happy', 1])
   await controller.resetDay()
-  assert.equal(last().todayLabel, 'Hoje: 0 🍅')
+  assert.equal(last().todayLabel, 'Today: 0 🍅')
   await controller.setMinutes(30)
   await controller.reset()
   assert.deepEqual([last().status, last().clock], ['idle', '30:00'])
@@ -136,7 +195,7 @@ test('panel.html has every element panel-main.ts looks up', () => {
   const ids = [...script.matchAll(/\$(?:<[^>]+>)?\('([\w-]+)'\)/g)].map((m) => m[1])
   assert.ok(ids.length >= 9)
   for (const id of ids) assert.ok(html.includes(`id="${id}"`), `missing #${id}`)
-  for (const cls of ['dial', 'arc', 'pixel-pet', 'data-preset="25"', 'data-preset="50"', 'icon-play', 'icon-pause']) {
+  for (const cls of ['dial', 'arc', 'pixel-pet', 'data-preset="25"', 'data-preset="50"', 'data-break="5"', 'data-break="15"', 'id="count-minus"', 'id="count-plus"', 'icon-play', 'icon-pause']) {
     assert.ok(html.includes(cls), `missing .${cls}`)
   }
   assert.ok(html.includes('src="./panel-main.ts"'))

@@ -1,5 +1,6 @@
 import { assert, test } from 'orca/testing'
 import {
+  adjustToday,
   clampMinutes,
   emptyStore,
   FINISHED_LINGER_MS,
@@ -8,6 +9,7 @@ import {
   MINUTE,
   nextLocalMidnight,
   normalizeStore,
+  notificationBody,
   pause,
   reconcile,
   reset,
@@ -15,6 +17,8 @@ import {
   setMinutes,
   snapshot,
   start,
+  startBreak,
+  suggestedBreakMinutes,
   statusBarView,
   toggle
 } from './timer.ts'
@@ -102,9 +106,86 @@ test('status bar text and tone follow the state', () => {
   const s = { ...start(emptyStore(), T0), counts: { '2026-11-26': 3 } }
   const run = statusBarView(snapshot(s, T0 + 6 * MINUTE + 18_000))
   assert.deepEqual([run.text, run.tone], ['🍅 18:42 · 3', 'accent'])
-  assert.match(run.tooltip, /faltam 18:42/)
+  assert.match(run.tooltip, /18:42 left/)
   const paused = statusBarView(snapshot(pause(s, T0 + MINUTE), T0 + 2 * MINUTE))
   assert.deepEqual([paused.text, paused.tone], ['🍅 ⏸ 24:00 · 3', 'neutral'])
   const done = statusBarView(snapshot(reconcile(s, T0 + 25 * MINUTE).store, T0 + 25 * MINUTE))
-  assert.deepEqual([done.text, done.tone], ['🍅 Pronto! · 4', 'success'])
+  assert.deepEqual([done.text, done.tone], ['🍅 Done! · 4', 'success'])
+})
+
+test('breaks: 5 minutes, 15 on every 4th pomodoro', () => {
+  assert.deepEqual([0, 1, 3, 4, 5, 8].map(suggestedBreakMinutes), [5, 5, 5, 15, 5, 15])
+})
+
+test('a break runs after a pomodoro, is not counted, and hands back the pomodoro length', () => {
+  const done = reconcile(start(emptyStore(), T0, 40), T0 + 40 * MINUTE).store
+  assert.equal(snapshot(done, T0 + 40 * MINUTE).suggestedBreakMinutes, 5)
+  const rest = startBreak(done, T0 + 41 * MINUTE, 15)
+  assert.deepEqual([rest.timer.status, rest.timer.kind, rest.timer.endsAt], ['running', 'break', T0 + 56 * MINUTE])
+  assert.equal(startBreak(rest, T0 + 42 * MINUTE, 5), rest) // not over a running session
+  const paused = pause(rest, T0 + 46 * MINUTE)
+  assert.deepEqual([paused.timer.kind, paused.timer.pausedRemainingMs], ['break', 10 * MINUTE])
+  assert.equal(toggle(paused, T0 + 50 * MINUTE).timer.kind, 'break')
+  const over = reconcile(rest, T0 + 56 * MINUTE)
+  assert.deepEqual([over.completed, over.store.timer.status, over.store.timer.kind], [true, 'finished', 'break'])
+  assert.deepEqual(over.store.counts, done.counts) // a break never counts
+  const next = start(over.store, T0 + 57 * MINUTE) // Start after a break: a pomodoro of 40 min
+  assert.deepEqual([next.timer.kind, next.timer.durationMs], ['focus', 40 * MINUTE])
+  const lingered = reconcile(over.store, T0 + 56 * MINUTE + FINISHED_LINGER_MS).store
+  assert.deepEqual([lingered.timer.status, lingered.timer.kind, lingered.timer.durationMs], ['idle', 'focus', 40 * MINUTE])
+  assert.equal(reset(rest).timer.durationMs, 40 * MINUTE)
+})
+
+test('the long break is proposed on the 4th pomodoro of the day', () => {
+  const s = { ...start(emptyStore(), T0), counts: { '2026-11-26': 3 } }
+  const done = reconcile(s, T0 + 25 * MINUTE).store
+  assert.equal(snapshot(done, T0 + 25 * MINUTE).suggestedBreakMinutes, 15)
+})
+
+test('normalizeStore keeps a break, and drops a stale one that is not counting down', () => {
+  const run = normalizeStore({ timer: { status: 'running', kind: 'break', durationMs: 5 * MINUTE, focusMs: 30 * MINUTE, endsAt: T0 } })
+  assert.deepEqual([run.timer.kind, run.timer.durationMs, run.timer.focusMs], ['break', 5 * MINUTE, 30 * MINUTE])
+  const idle = normalizeStore({ timer: { status: 'idle', kind: 'break', durationMs: 5 * MINUTE, focusMs: 30 * MINUTE } })
+  assert.deepEqual([idle.timer.kind, idle.timer.durationMs], ['focus', 30 * MINUTE])
+  assert.equal(normalizeStore({ timer: { status: 'idle', durationMs: 50 * MINUTE } }).timer.focusMs, 50 * MINUTE)
+})
+
+test('adjustToday corrects only today, never below zero, and skips no-op writes', () => {
+  const s = { ...emptyStore(), counts: { '2026-11-25': 4, '2026-11-26': 2 } }
+  assert.deepEqual(adjustToday(s, T0, 1).counts, { '2026-11-25': 4, '2026-11-26': 3 })
+  assert.deepEqual(adjustToday(s, T0, -1).counts, { '2026-11-25': 4, '2026-11-26': 1 })
+  const zero = adjustToday(adjustToday(s, T0, -1), T0, -1)
+  assert.deepEqual(zero.counts, { '2026-11-25': 4 }) // zero is dropped, like Reset day
+  assert.equal(adjustToday(zero, T0, -1), zero) // already zero: same store
+  assert.deepEqual(adjustToday(emptyStore(), T0, 1).counts, { '2026-11-26': 1 })
+  assert.equal(snapshot(adjustToday(s, T0, 1), T0).todayCount, 3)
+})
+
+test('changing the length while finished keeps the finished timer and its break offer', () => {
+  const done = reconcile(start(emptyStore(), T0), T0 + 25 * MINUTE).store
+  const changed = setMinutes(done, 50)
+  assert.deepEqual([changed.timer.status, changed.timer.kind, changed.timer.finishedAt], ['finished', 'focus', T0 + 25 * MINUTE])
+  assert.deepEqual([changed.timer.focusMs, changed.timer.durationMs], [50 * MINUTE, 50 * MINUTE])
+  assert.equal(setMinutes(changed, 50), changed) // same length: no change
+  assert.equal(start(changed, T0 + 26 * MINUTE).timer.endsAt, T0 + 76 * MINUTE)
+  // After a break, only the pomodoro length changes.
+  const rested = reconcile(startBreak(done, T0 + 25 * MINUTE, 5), T0 + 30 * MINUTE).store
+  const next = setMinutes(rested, 40)
+  assert.deepEqual([next.timer.status, next.timer.kind, next.timer.durationMs, next.timer.focusMs], ['finished', 'break', 5 * MINUTE, 40 * MINUTE])
+})
+
+test('old-format timers load as pomodoros; a broken break length falls back to 5 min', () => {
+  const run = normalizeStore({ timer: { status: 'running', durationMs: 30 * MINUTE, endsAt: T0 } })
+  assert.deepEqual([run.timer.kind, run.timer.durationMs, run.timer.focusMs], ['focus', 30 * MINUTE, 30 * MINUTE])
+  const paused = normalizeStore({ timer: { status: 'paused', durationMs: 30 * MINUTE, pausedRemainingMs: MINUTE } })
+  assert.deepEqual([paused.timer.status, paused.timer.kind, paused.timer.focusMs], ['paused', 'focus', 30 * MINUTE])
+  const done = normalizeStore({ timer: { status: 'finished', durationMs: 30 * MINUTE, finishedAt: T0 } })
+  assert.deepEqual([done.timer.status, done.timer.kind], ['finished', 'focus'])
+  const broken = normalizeStore({ timer: { status: 'running', kind: 'break', durationMs: 0, focusMs: -5, endsAt: T0 } }, 30)
+  assert.deepEqual([broken.timer.durationMs, broken.timer.focusMs], [5 * MINUTE, 30 * MINUTE])
+})
+
+test('a lapsed pomodoro notice drops the break suggestion', () => {
+  assert.equal(notificationBody(4, 15), 'Time for a 15 min break. Today: 4 pomodoros 🍅')
+  assert.equal(notificationBody(1, null), 'Today: 1 pomodoro 🍅')
 })

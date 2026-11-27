@@ -7,11 +7,15 @@ import type { OrcaWorkerApi } from 'orca/worker'
 import { PANEL_ID, STATE_EVENT, STORE_KEY } from './protocol.ts'
 import { openPanelWithCli } from './open-panel.ts'
 import {
+  BREAK_DONE_BODY,
+  BREAK_DONE_TITLE,
+  adjustToday,
   clampMinutes,
   countOn,
   DEFAULT_MINUTES,
   FINISHED_LINGER_MS,
   localDateKey,
+  MINUTE,
   nextLocalMidnight,
   normalizeStore,
   notificationBody,
@@ -20,13 +24,17 @@ import {
   reset,
   resetDay,
   setMinutes,
+  SHORT_BREAK_MINUTES,
   snapshot,
   start,
+  startBreak,
+  suggestedBreakMinutes,
   statusBarView,
   toggle,
   type PomodoroStore,
   type Snapshot,
-  type StatusBarView
+  type StatusBarView,
+  type TimerKind
 } from './timer.ts'
 
 export const STATUS_ITEM_ID = 'pomodoro'
@@ -88,7 +96,7 @@ export default function activate(orca: OrcaWorkerApi): void {
       if (mutate) store = mutate(store, now)
       if (caught.changed || store !== loaded) await save(store)
       cache = store
-      if (caught.completed) await notifyDone(store, loaded.timer.endsAt ?? now)
+      if (caught.completed) await notifyDone(store, loaded.timer.kind, loaded.timer.endsAt ?? now, now)
       const snap = snapshot(store, now)
       publish(snap)
       schedule(store, now)
@@ -96,15 +104,31 @@ export default function activate(orca: OrcaWorkerApi): void {
     })
   }
 
-  async function notifyDone(after: PomodoroStore, endedAt: number): Promise<void> {
+  /**
+   * A pomodoro is always reported (with its count), even one that ended while Orca was closed; its
+   * break is suggested only while the panel still offers it. A break that ended long ago is not.
+   */
+  async function notifyDone(
+    after: PomodoroStore,
+    kind: TimerKind,
+    endedAt: number,
+    now: number
+  ): Promise<void> {
     const endedOn = localDateKey(endedAt)
     const count = countOn(after, endedOn)
-    orca.log(`pomodoro finished (${endedOn}: ${count})`)
+    const fresh = now - endedAt <= FINISHED_LINGER_MS
+    orca.log(`${kind === 'break' ? 'break' : 'pomodoro'} finished (${endedOn}: ${count})`)
+    if (kind === 'break' && !fresh) return
     try {
-      await orca.host.call('notifications.show', {
-        title: 'Pomodoro concluído 🍅',
-        body: notificationBody(count)
-      })
+      await orca.host.call(
+        'notifications.show',
+        kind === 'break'
+          ? { title: BREAK_DONE_TITLE, body: BREAK_DONE_BODY }
+          : {
+              title: 'Pomodoro done 🍅',
+              body: notificationBody(count, fresh ? suggestedBreakMinutes(count) : null)
+            }
+      )
     } catch (error) {
       orca.log(`notification failed: ${(error as Error).message}`)
     }
@@ -173,6 +197,9 @@ export default function activate(orca: OrcaWorkerApi): void {
   orca.panels.handle('pomodoro.start', ({ minutes }) =>
     apply((s, now) => start(s, now, minutes === undefined ? undefined : clampMinutes(minutes)))
   )
+  orca.panels.handle('pomodoro.startBreak', ({ minutes }) =>
+    apply((s, now) => startBreak(s, now, clampMinutes(minutes, SHORT_BREAK_MINUTES)))
+  )
   orca.panels.handle('pomodoro.pause', run(pause))
   orca.panels.handle('pomodoro.toggle', run(toggle))
   orca.panels.handle('pomodoro.reset', run((s) => reset(s)))
@@ -180,34 +207,51 @@ export default function activate(orca: OrcaWorkerApi): void {
     apply((s) => setMinutes(s, clampMinutes(minutes)))
   )
   orca.panels.handle('pomodoro.resetDay', run(resetDay))
+  orca.panels.handle('pomodoro.adjustCount', ({ delta }) =>
+    apply((s, now) => (delta === 1 || delta === -1 ? adjustToday(s, now, delta) : s))
+  )
 
   // Palette commands (and the status bar item / keybinding).
   orca.commands.register('pomodoro.toggle', async () => {
     const snap = await apply(toggle)
-    return snap.status === 'running' ? 'Pomodoro em foco 🍅' : 'Pomodoro pausado'
+    const what = snap.kind === 'break' ? 'Break' : 'Pomodoro'
+    return snap.status === 'running'
+      ? `${what} running ${snap.kind === 'break' ? '☕' : '🍅'}`
+      : `${what} paused`
   })
   orca.commands.register('pomodoro.reset', async () => {
     await apply((s) => reset(s))
-    return 'Timer resetado'
+    return 'Timer reset'
   })
   orca.commands.register('pomodoro.resetDay', async () => {
     await apply(resetDay)
-    return 'Contagem de hoje zerada'
+    return "Today's count cleared"
   })
   orca.commands.register('pomodoro.focus25', async () => {
     await apply((s, now) => start(s, now, 25))
-    return 'Foco de 25 min iniciado 🍅'
+    return '25 min focus started 🍅'
   })
   orca.commands.register('pomodoro.focus50', async () => {
     await apply((s, now) => start(s, now, 50))
-    return 'Foco de 50 min iniciado 🍅'
+    return '50 min focus started 🍅'
+  })
+  orca.commands.register('pomodoro.break', async () => {
+    let started = false
+    const snap = await apply((s, now) => {
+      const next = startBreak(s, now, snapshot(s, now).suggestedBreakMinutes)
+      started = next !== s
+      return next
+    })
+    return started
+      ? `${Math.round(snap.durationMs / MINUTE)} min break started ☕`
+      : 'Finish or reset the timer before taking a break'
   })
   orca.commands.register('pomodoro.open', async () => {
     try {
       await env.openPanel(orca)
     } catch (error) {
       orca.log(`open panel failed: ${(error as Error).message}`)
-      return `Não consegui abrir o painel: ${(error as Error).message}`
+      return `Couldn't open the panel: ${(error as Error).message}`
     }
     return undefined
   })

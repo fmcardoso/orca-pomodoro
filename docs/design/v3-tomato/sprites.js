@@ -2,7 +2,7 @@
 // Keep each palette local so the six characters also read differently in silhouette.
 const tomatoes = [
   {
-    name: 'Pingo', style: 'Cerejinha sem contorno', grid: 16, scale: 4,
+    name: 'Pingo', style: 'Outline-free cherry tomato', grid: 16, scale: 4,
     colors: { L: '#36725c', l: '#83b47a', R: '#f36951', r: '#d8483c', H: '#ffc49a', I: '#462938', B: '#ffa397' },
     body: [
       [6,1,'..lL', '.lLL', 'LlLL.lL'],
@@ -15,7 +15,7 @@ const tomatoes = [
     expression: 'dots', sleep: [12,0], stars: [[0,2],[13,1]]
   },
   {
-    name: 'Roma', style: 'Italiano de botas', grid: 24, scale: 3,
+    name: 'Roma', style: 'Roma tomato in boots', grid: 24, scale: 3,
     colors: { L: '#24634e', l: '#77a765', R: '#ed6541', r: '#c14632', D: '#993b38', H: '#ffbc79', I: '#482d38', B: '#ffa180' },
     body: [
       [7,1,'.....lL', '.....LL', '...llL', '.LLlLL', 'LLL.LL'],
@@ -30,7 +30,7 @@ const tomatoes = [
     expression: 'runner', sleep: [20,1], stars: [[2,8],[19,3]]
   },
   {
-    name: 'Costelão', style: 'Tomate caqui frisado', grid: 32, scale: 2,
+    name: 'Costelão', style: 'Ribbed persimmon tomato', grid: 32, scale: 2,
     colors: { L: '#397456', l: '#84a766', V: '#a8bf70', R: '#e9614c', r: '#cb4b40', D: '#a33d3b', H: '#ff9d79', I: '#522c33', B: '#fa9b83' },
     body: [
       [1,9,'.....rrRRR...rrRRRRR...Rrr', '...rRRRRRRRrRRRRRRRRRrRRRRrr',
@@ -50,7 +50,7 @@ const tomatoes = [
     expression: 'brows', sleep: [25,4], stars: [[2,6],[27,5]]
   },
   {
-    name: 'Cartucho', style: 'Quatro cores de arcade', grid: 16, scale: 4,
+    name: 'Cartucho', style: 'Four arcade colors', grid: 16, scale: 4,
     colors: { I: '#402f4a', L: '#996064', R: '#e78568', H: '#ffdb9b' },
     body: [
       [2,1,'...II...II', '...ILI.ILI', '....ILILI'],
@@ -63,7 +63,7 @@ const tomatoes = [
     expression: 'console', sleep: [0,0], stars: [[0,2],[13,0]]
   },
   {
-    name: 'Duplinha', style: 'Duas cerejas no mesmo ramo', grid: 24, scale: 3,
+    name: 'Duplinha', style: 'Two cherries on one vine', grid: 24, scale: 3,
     colors: { L: '#367260', l: '#80ad77', R: '#eb654c', r: '#c34942', A: '#f59c4d', a: '#d37b46', H: '#ffcb93', I: '#492f37', B: '#ffafa1' },
     body: [
       [4,1,'......llL...ll', '......lLL..lLL', '.......LLlLLL', '......lLLLL',
@@ -80,7 +80,7 @@ const tomatoes = [
     expression: 'twins', sleep: [19,2], stars: [[1,5],[20,3]]
   },
   {
-    name: 'Broto', style: 'Tomate amarelo de brotinho', grid: 24, scale: 3,
+    name: 'Broto', style: 'Yellow sprout tomato', grid: 24, scale: 3,
     colors: { L: '#337565', l: '#72a767', V: '#b2c879', R: '#efb653', r: '#e39645', D: '#bd7343', H: '#ffe39a', I: '#4b3541', B: '#ef956a', W: '#fff4da' },
     body: [
       [3,8,'.....RRRRRr', '...RRRRRHHRRr', '..RRHHHRRRRRRRr', '.RRHHHRRRRRRRRRr',
@@ -96,7 +96,7 @@ const tomatoes = [
 ]
 
 const spriteStates = {
-  running: 'Em foco', paused: 'Dormindo', finished: 'Feliz', idle: 'Dormindo'
+  running: 'Focused', paused: 'Sleeping', finished: 'Happy', idle: 'Sleeping'
 }
 
 function spriteFrame(pet, state, frame) {

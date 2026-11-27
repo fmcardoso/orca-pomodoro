@@ -4,19 +4,19 @@ const themeParam = params.get('theme')
 let dark = themeParam === 'dark' || (themeParam !== 'light' && matchMedia('(prefers-color-scheme: dark)').matches)
 document.documentElement.classList.toggle('dark', dark)
 
-const states = {running: 'Concentrado', paused: 'Dormindo', finished: 'Feliz'}
+const states = {running: 'Focused', paused: 'Sleeping', finished: 'Happy'}
 const still = params.has('sheet')
 let selected = 1
 let pose = 'running'
 
 function labelFor(option) {
-  return option.id === 'ref' ? 'Referência' : 'Opção ' + option.id.toUpperCase()
+  return option.id === 'ref' ? 'Reference' : 'Option ' + option.id.toUpperCase()
 }
 
 function pair(index, state) {
   const option = faceOptions[index]
   const card = document.createElement('iframe')
-  card.title = option.name + ' no Dueto · ' + states[state]
+  card.title = option.name + ' in Dueto · ' + states[state]
   card.src = 'card.html?' + new URLSearchParams({
     face: option.id, state, theme: dark ? 'dark' : 'light', ...(still ? {still: '1'} : {})
   })
@@ -31,10 +31,10 @@ function pair(index, state) {
 
 function sheet() {
   gallery.className = 'sheet'
-  gallery.innerHTML = `<header><div><h1>Expressões do Costelão</h1>
-    <p>Cartão Dueto em tamanho real · detalhe ampliado 4×</p></div>
-    <div class="theme-label">32 × 32 px<br>Tema ${dark ? 'escuro' : 'claro'}</div></header>
-    <table><thead><tr><th scope="col">Rosto</th>${Object.values(states).map(label => '<th scope="col">' + label + '</th>').join('')}</tr></thead>
+  gallery.innerHTML = `<header><div><h1>Costelão expressions</h1>
+    <p>Dueto card at actual size · detail enlarged 4×</p></div>
+    <div class="theme-label">32 × 32 px<br>${dark ? 'Dark' : 'Light'} theme</div></header>
+    <table><thead><tr><th scope="col">Face</th>${Object.values(states).map(label => '<th scope="col">' + label + '</th>').join('')}</tr></thead>
     <tbody></tbody></table>`
   for (const [index, option] of faceOptions.entries()) {
     const row = gallery.querySelector('tbody').insertRow()
@@ -49,7 +49,7 @@ function strips() {
     const strip = document.createElement('article')
     strip.id = 'strip-' + option.id
     strip.innerHTML = `<header><h1>${labelFor(option)} · ${option.name}</h1><p>${option.detail}</p></header>
-      <table><thead><tr><th>Estado</th>${[1,2,3,4].map(n => '<th scope="col">Quadro ' + n + '</th>').join('')}</tr></thead><tbody></tbody></table>`
+      <table><thead><tr><th>State</th>${[1,2,3,4].map(n => '<th scope="col">Frame ' + n + '</th>').join('')}</tr></thead><tbody></tbody></table>`
     for (const [state, label] of Object.entries(states)) {
       const row = strip.querySelector('tbody').insertRow()
       row.innerHTML = '<th scope="row">' + label + '</th>'
@@ -72,14 +72,14 @@ function showSample() {
 
 function preview() {
   gallery.className = 'chooser'
-  gallery.innerHTML = `<header><div><h1>Expressões do Costelão</h1><p>Tomate de 32 × 32 pixels para o Dueto.</p></div>
-    <fieldset class="segments"><legend>Tema</legend>${radio('theme','light','Claro',!dark)}${radio('theme','dark','Escuro',dark)}</fieldset></header>
-    <fieldset class="pets"><legend>Rosto</legend>${faceOptions.map((option, i) => radio('face', i,
+  gallery.innerHTML = `<header><div><h1>Costelão expressions</h1><p>32 × 32 pixel tomato for Dueto.</p></div>
+    <fieldset class="segments"><legend>Theme</legend>${radio('theme','light','Light',!dark)}${radio('theme','dark','Dark',dark)}</fieldset></header>
+    <fieldset class="pets"><legend>Face</legend>${faceOptions.map((option, i) => radio('face', i,
       '<span class="thumbnail">' + faceSVG(i, 'running', {frame: 0}) + '</span><small>' + labelFor(option) + '</small><b>' + option.name + '</b>', i === selected)).join('')}</fieldset>
     <section class="detail"><div class="detail-head"><div><h2></h2><p id="detail"></p></div>
-      <fieldset class="segments"><legend>Expressão</legend>${Object.entries(states).map(([state, label]) => radio('pose',state,label,pose === state)).join('')}</fieldset></div>
-      <div class="scale"><span>Cartão Dueto · 1×</span><span>Detalhe · 4×</span></div><div id="sample"></div></section>
-    <nav aria-label="Pranchas"><a href="sheet.png">Prancha clara</a><a href="sheet-dark.png">Prancha escura</a><a href="?frames">Quadros de animação</a></nav>`
+      <fieldset class="segments"><legend>Expression</legend>${Object.entries(states).map(([state, label]) => radio('pose',state,label,pose === state)).join('')}</fieldset></div>
+      <div class="scale"><span>Dueto card · 1×</span><span>Detail · 4×</span></div><div id="sample"></div></section>
+    <nav aria-label="Sheets"><a href="sheet.png">Light sheet</a><a href="sheet-dark.png">Dark sheet</a><a href="?frames">Animation frames</a></nav>`
   gallery.addEventListener('change', ({target}) => {
     if (target.name === 'pose') pose = target.value
     if (target.name === 'face') selected = Number(target.value)

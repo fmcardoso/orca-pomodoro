@@ -42,9 +42,9 @@ const ring = `<svg class="dial" viewBox="0 0 100 100" aria-hidden="true">
 </svg>`
 const pet = `<div class="portrait">${variant === 'dueto' ? ring : ''}${tomato}</div>`
 const statusText = '<span class="status" role="status"></span>'
-const clock = '<div class="clock" role="timer" aria-label="Tempo restante"></div>'
+const clock = '<div class="clock" role="timer" aria-label="Time remaining"></div>'
 const primary = '<button class="primary"></button>'
-const reset = `<button class="reset" title="Resetar timer" aria-label="Resetar timer">${icon('reset')}</button>`
+const reset = `<button class="reset" title="Reset timer" aria-label="Reset timer">${icon('reset')}</button>`
 const bar = '<div class="meter" aria-hidden="true"><div class="fill"></div></div>'
 const hero = {
   dueto: `${pet}<div class="readout">${statusText}${clock}<div class="actions">${primary}${reset}</div></div>`,
@@ -54,19 +54,19 @@ const hero = {
 }
 main.innerHTML = `<div class="widget">
   <section class="hero">${hero[variant]}</section>
-  <section class="settings" aria-label="Duração da sessão">
-    <span class="row-label">Duração</span>
-    <div class="choices" role="group" aria-label="Atalhos em minutos">
-      <button data-preset="25" aria-label="25 minutos">25</button><button data-preset="50" aria-label="50 minutos">50</button>
+  <section class="settings" aria-label="Session length">
+    <span class="row-label">Duration</span>
+    <div class="choices" role="group" aria-label="Shortcuts in minutes">
+      <button data-preset="25" aria-label="25 minutes">25</button><button data-preset="50" aria-label="50 minutes">50</button>
     </div>
-    <label class="custom"><input aria-label="Minutos personalizados" title="Minutos personalizados" type="number" min="1" max="180" step="1" value="25"> min</label>
+    <label class="custom"><input aria-label="Custom minutes" title="Custom minutes" type="number" min="1" max="180" step="1" value="25"> min</label>
   </section>
-  <footer><span class="today"></span><button class="clear">Zerar dia</button></footer>
+  <footer><span class="today"></span><button class="clear">Reset day</button></footer>
 </div>`
 
 const find = selector => main.querySelector(selector)
-const stateLabel = { running: 'Em foco', paused: 'Pausado', finished: 'Concluído', idle: 'Pronto' }
-const faceLabel = { awake: 'Tomate concentrado', asleep: 'Tomate dormindo', happy: 'Tomate festejando' }
+const stateLabel = { running: 'Focus', paused: 'Paused', finished: 'Done', idle: 'Ready' }
+const faceLabel = { awake: 'Focused tomato', asleep: 'Sleeping tomato', happy: 'Celebrating tomato' }
 let state = Object.hasOwn(stateLabel, query.get('state')) ? query.get('state') : 'running'
 let minutes = 25
 let left = { running: 1122, paused: 960, finished: 0, idle: 1500 }[state]
@@ -86,7 +86,7 @@ function draw() {
   const ss = String(left % 60).padStart(2, '0')
   find('.clock').textContent = (hh ? hh + ':' : '') + mm + ':' + ss
   main.classList.toggle('hours', hh > 0)
-  find('.today').textContent = 'Hoje: ' + count + ' 🍅'
+  find('.today').textContent = 'Today: ' + count + ' 🍅'
   if (document.activeElement !== find('input')) find('input').value = minutes
   for (const button of main.querySelectorAll('[data-preset]')) {
     button.disabled = !editable
@@ -99,7 +99,7 @@ function draw() {
   find('.expression').innerHTML = faces[face]
   find('#pet-title').textContent = faceLabel[face]
   find('.status').textContent = stateLabel[state]
-  const label = running ? 'Pausar' : state === 'paused' ? 'Continuar' : 'Iniciar'
+  const label = running ? 'Pause' : state === 'paused' ? 'Resume' : 'Start'
   find('.primary').innerHTML = icon(running ? 'pause' : 'play') +
     (variant === 'dueto' ? '<span>' + label + '</span>' : '')
   find('.primary').setAttribute('aria-label', label)
@@ -152,11 +152,11 @@ for (const button of main.querySelectorAll('[data-preset]')) {
 function disarm() {
   clearTimeout(confirmTimeout)
   confirmTimeout = null
-  find('.clear').textContent = 'Zerar dia'
+  find('.clear').textContent = 'Reset day'
 }
 find('.clear').onclick = () => {
   if (confirmTimeout === null) {
-    find('.clear').textContent = 'Confirmar?'
+    find('.clear').textContent = 'Confirm?'
     confirmTimeout = setTimeout(disarm, 3000)
   } else {
     disarm()

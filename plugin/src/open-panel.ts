@@ -84,7 +84,7 @@ export async function openPanelWithCli(orca: OrcaWorkerApi, panelId: string, id 
   if (!cachedKey) {
     const listed = (await run(cli, ['plugin', 'list'])) as { plugins?: ListedPlugin[] }
     cachedKey = pickPluginKey(listed.plugins ?? [], pluginRoot(), id, panelId)
-    if (!cachedKey) throw new Error('plugin não encontrado em `orca plugin list`')
+    if (!cachedKey) throw new Error('plugin not found in `orca plugin list`')
   }
   try {
     await run(cli, ['plugin', 'open', cachedKey, '--panel', panelId])
