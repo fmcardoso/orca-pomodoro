@@ -39,7 +39,8 @@ barra lateral direita.
 | ![](docs/screenshots/v0.2/orca/panel-idle.png) | ![](docs/screenshots/v0.2/orca/panel-running.png) | ![](docs/screenshots/v0.2/orca/panel-paused.png) | ![](docs/screenshots/v0.2/orca/panel-finished.png) |
 
 Barra de status: ![parado](docs/screenshots/v0.2/orca/status-bar-idle.png) ·
-![rodando](docs/screenshots/v0.2/orca/status-bar-running.png)
+![rodando](docs/screenshots/v0.2/orca/status-bar-running.png) ·
+![concluído](docs/screenshots/v0.2/orca/status-bar-finished.png)
 
 Rodadas de desenho: [layouts compactos](docs/design/v2/README.md) ·
 [seis tomates de pixel](docs/design/v3-tomato/README.md) ·
